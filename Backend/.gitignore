@@ -1,0 +1,33 @@
+## Ignore Visual Studio temporary files, build results, and
+## user-specific files
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.ilk
+*.log
+
+# VS Code
+.vscode/
+
+# Visual Studio 2019/2022 temporary folders
+.vs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Others
+TestResults/
