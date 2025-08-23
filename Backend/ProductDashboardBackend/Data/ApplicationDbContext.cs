@@ -24,8 +24,8 @@ namespace ProductDashboardBackend.Data
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId);
 
-            // Call SeedData
-            SeedData.Seed(modelBuilder);
+            
         }
+
     }
 }

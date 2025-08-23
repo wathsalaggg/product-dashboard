@@ -44,23 +44,29 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Test DB connection
+// Ensure database is created and seed data
 try
 {
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        // Test DB connection
         bool canConnect = await db.Database.CanConnectAsync();
         Console.WriteLine($"Database connection successful? {canConnect}");
 
         // Ensure database is created
         await db.Database.EnsureCreatedAsync();
         Console.WriteLine("Database ensured created.");
+
+        // Seed database asynchronously
+        await SeedData.SeedAsync(db);
+        Console.WriteLine("Database seeding completed.");
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"Database connection error: {ex.Message}");
+    Console.WriteLine($"Database connection or seeding error: {ex.Message}");
 }
 
 app.Run();
