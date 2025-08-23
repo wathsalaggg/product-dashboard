@@ -1,78 +1,127 @@
-using ProductDashboardBackend.Data;
+//using ProductDashboardBackend.Data;
+//using Microsoft.EntityFrameworkCore;
+//using System.Text.Json.Serialization;
+
+//var builder = WebApplication.CreateBuilder(args);
+
+//// Add services to the container.
+//builder.Services.AddControllers()
+//    .AddJsonOptions(options =>
+//    {
+//        // Fix circular reference issue
+//        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+//        options.JsonSerializerOptions.WriteIndented = true; 
+//    });
+
+//// Add MySQL DbContext
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseMySql(
+//        builder.Configuration.GetConnectionString("DefaultConnection"),
+//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+//    )
+//);
+
+//// Add CORS
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll",
+//        policy =>
+//        {
+//            policy.AllowAnyOrigin()
+//                  .AllowAnyMethod()
+//                  .AllowAnyHeader();
+//        });
+//});
+
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
+
+//var app = builder.Build();
+
+//// Configure the HTTP request pipeline.
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+//app.UseHttpsRedirection();
+//app.UseCors("AllowAll");
+//app.UseAuthorization();
+//app.MapControllers();
+
+//// Ensure database is created and seed data
+//try
+//{
+//    using (var scope = app.Services.CreateScope())
+//    {
+//        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+//        // Test DB connection
+//        bool canConnect = await db.Database.CanConnectAsync();
+//        Console.WriteLine($"Database connection successful? {canConnect}");
+
+//        // Ensure database is created
+//        await db.Database.EnsureCreatedAsync();
+//        Console.WriteLine("Database ensured created.");
+
+//        // Seed database asynchronously
+//        await SeedData.SeedAsync(db);
+//        Console.WriteLine("Database seeding completed.");
+//    }
+//}
+//catch (Exception ex)
+//{
+//    Console.WriteLine($"Database connection or seeding error: {ex.Message}");
+//}
+
+//app.Run();
+
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
+using ProductDashboardBackend.Data;
+using System;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        // Fix circular reference issue
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.WriteIndented = true; 
-    });
-
-// Add MySQL DbContext
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    )
-);
-
-// Add CORS
-builder.Services.AddCors(options =>
+public class Program
 {
-    options.AddPolicy("AllowAll",
-        policy =>
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services
+        builder.Services.AddControllersWithViews(options =>
         {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
+            // Register the custom model binder for comma-separated values
+            options.ModelBinderProviders.Insert(0, new CommaSeparatedModelBinderProvider());
         });
-});
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
+        builder.Services.AddScoped<IProductService, ProductService>();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+        var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAll");
-app.UseAuthorization();
-app.MapControllers();
+        // Configure pipeline
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
 
-// Ensure database is created and seed data
-try
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        app.UseRouting();
 
-        // Test DB connection
-        bool canConnect = await db.Database.CanConnectAsync();
-        Console.WriteLine($"Database connection successful? {canConnect}");
+        // Enable static files (for CSS/JS)
+        app.UseStaticFiles();
 
-        // Ensure database is created
-        await db.Database.EnsureCreatedAsync();
-        Console.WriteLine("Database ensured created.");
+        // Map default controller route
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}"
+        );
 
-        // Seed database asynchronously
-        await SeedData.SeedAsync(db);
-        Console.WriteLine("Database seeding completed.");
+        // Keep API controllers mapped as well
+        app.MapControllers();
+
+        app.Run();
     }
 }
-catch (Exception ex)
-{
-    Console.WriteLine($"Database connection or seeding error: {ex.Message}");
-}
 
-app.Run();

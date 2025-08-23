@@ -12,7 +12,7 @@ namespace ProductDashboardBackend.Models.Entities
         public Product Product { get; set; } = null!;
 
         public int Quantity { get; set; }
-        public decimal TotalPrice => Product.Price * Quantity;
+        //public decimal TotalPrice => Product.Price * Quantity;
 
         public DateTime AddedAt { get; set; }
     }
