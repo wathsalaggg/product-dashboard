@@ -1,10 +1,17 @@
 using ProductDashboardBackend.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Fix circular reference issue
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true; 
+    });
 
 // Add MySQL DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -41,7 +48,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
-
 app.MapControllers();
 
 // Ensure database is created and seed data
