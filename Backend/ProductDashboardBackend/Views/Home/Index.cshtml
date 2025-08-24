@@ -20,6 +20,9 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Scroll to top on page load
+            window.scrollTo(0, 0);
+
             // Load home content by default
             loadHomeView();
 
@@ -47,6 +50,7 @@
                 hideLoading();
                 updateActiveNav('home');
                 $('#searchFilterRow').hide(); // Hide search for home
+                scrollToTop(); // Scroll to top after loading
             });
         }
 
@@ -56,6 +60,7 @@
                 hideLoading();
                 updateActiveNav('products');
                 $('#searchFilterRow').show(); // Show search for products
+                scrollToTop(); // Scroll to top after loading
             });
         }
 
@@ -65,6 +70,7 @@
                 hideLoading();
                 updateActiveNav('promotions');
                 $('#searchFilterRow').hide();
+                scrollToTop(); // Scroll to top after loading
             });
         }
 
@@ -74,6 +80,7 @@
                 hideLoading();
                 updateActiveNav('community');
                 $('#searchFilterRow').hide();
+                scrollToTop(); // Scroll to top after loading
             });
         }
 
@@ -89,9 +96,7 @@
                 },
                 success: function (result) {
                     $('#contentContainer').html(result);
-                    $('html, body').animate({
-                        scrollTop: $('#contentContainer').offset().top - 100
-                    }, 300);
+                    scrollToTop(); // Scroll to top after loading products
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading products:', error);
@@ -126,6 +131,14 @@
             $('#searchInput').val('');
             $('#categoryFilter').val('');
             loadProducts('', '', 1);
+        }
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     </script>
 

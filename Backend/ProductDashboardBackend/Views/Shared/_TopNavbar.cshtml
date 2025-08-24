@@ -55,7 +55,7 @@
 
                 <!-- Mobile Menu Toggle -->
                 <button class="navbar-toggler ms-3 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavMenu"
-                        aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Toggle navigation"
+                        aria-controls="mobileNavMenu" aria-expanded="false; aria-label="Toggle navigation"
                         style="border: none; transition: transform 0.3s ease;">
                     <span style="color: #ECF0F1; font-size: 1.5rem;">☰</span>
                 </button>
@@ -92,11 +92,10 @@
             </ul>
         </div>
 
-        <!-- Search and Filter Row (initially hidden) -->
-        <div class="row w-100 g-2 py-2 align-items-center" id="searchFilterRow" style="display: none;">
+        <!-- Search and Filter Row (ALWAYS VISIBLE) -->
+        <div class="row w-100 g-2 py-2 align-items-center" id="searchFilterRow" style="display: flex !important;">
             <div class="col-md-4">
-                <select class="form-select border-0" id="categoryFilter"
-                        style="background-color: #ECF0F1; transition: all 0.3s ease;">
+                <select class="form-select border-0" id="categoryFilter" style="background-color: #ECF0F1; transition: all 0.3s ease;">
                     <option value="">All Categories</option>
                     @if (Model?.Categories != null)
                     {
@@ -109,8 +108,7 @@
             </div>
             <div class="col-md-8">
                 <div class="input-group">
-                    <input type="text" class="form-control border-0" id="searchInput" placeholder="Find a dish..."
-                           style="background-color: #ECF0F1; transition: all 0.3s ease;">
+                    <input type="text" class="form-control border-0" id="searchInput" placeholder="Find a dish..." style="background-color: #ECF0F1; transition: all 0.3s ease;">
                     <span class="input-group-text bg-light border-0" style="transition: all 0.3s ease;">
                         <i class="ri-search-line"></i>
                     </span>
@@ -153,13 +151,6 @@
         transform: rotate(90deg);
     }
 
-    /* Mobile Hover Effects */
-    .navbar-nav .nav-link:not(.active):hover {
-        color: #DAA520 !important;
-        background-color: rgba(218, 165, 32, 0.1) !important;
-        transform: translateX(5px);
-    }
-
     /* Form Elements Hover Effects */
     #categoryFilter:hover,
     #searchInput:hover {
@@ -192,4 +183,16 @@
             outline: 2px solid #DAA520;
             outline-offset: 2px;
         }
+
+    /* Ensure search filter row is always visible */
+    #searchFilterRow {
+        display: flex !important;
+    }
 </style>
+
+<script>
+    // Scroll to top when page loads or refreshes
+    window.addEventListener('load', function() {
+        window.scrollTo(0, 0);
+    });
+</script>
