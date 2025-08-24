@@ -17,30 +17,115 @@
     </div>
 </div>
 
-<!-- Optional: Add some custom CSS for smooth transitions -->
-<style>
-    .dashboard-container {
-        transition: opacity 0.3s ease-in-out;
-    }
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            console.log('Document ready - initializing pagination');
 
-    #loadingIndicator {
-        transition: all 0.3s ease-in-out;
-    }
+            // Handle pagination clicks - FIXED SELECTOR
+            $(document).on('click', '.pagination .page-link[data-page]', function (e) {
+                e.preventDefault();
+                console.log('Pagination link clicked');
 
-    /* Smooth appearance for product grid */
-    #productGrid {
-        animation: fadeIn 0.5s ease-in-out;
-    }
+                var page = $(this).data('page');
+                var searchTerm = $('#searchInput').val();
+                var categoryId = $('#categoryFilter').val();
 
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+                console.log('Loading page:', page, 'Search:', searchTerm, 'Category:', categoryId);
+                loadProducts(searchTerm, categoryId, page);
+            });
+
+            // Handle search and filter changes
+            $('#searchInput, #categoryFilter').on('input change', function () {
+                var searchTerm = $('#searchInput').val();
+                var categoryId = $('#categoryFilter').val();
+                console.log('Filter changed - Search:', searchTerm, 'Category:', categoryId);
+                loadProducts(searchTerm, categoryId, 1);
+            });
+        });
+
+                // In your loadProducts function, the server will now handle 8 items per page
+        function loadProducts(searchTerm, categoryId, page) {
+            // Show loading indicator
+            $('#loadingIndicator').removeClass('d-none');
+            $('#productContainer').addClass('opacity-50');
+
+            $.ajax({
+                url: '@Url.Action("ProductList", "Home")',
+                type: 'GET',
+                data: {
+                    searchTerm: searchTerm,
+                    categoryId: categoryId,
+                    page: page
+                },
+                success: function (result) {
+                    $('#productContainer').html(result);
+                    // Smooth scroll to top of products
+                    $('html, body').animate({
+                        scrollTop: $('#productContainer').offset().top - 100
+                    }, 300);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading products:', error);
+                },
+                complete: function () {
+                    $('#loadingIndicator').addClass('d-none');
+                    $('#productContainer').removeClass('opacity-50');
+                }
+            });
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        function clearFilters() {
+            console.log('Clearing filters');
+            $('#searchInput').val('');
+            $('#categoryFilter').val('');
+            loadProducts('', '', 1);
         }
-    }
-</style>
+    </script>
+
+    <style>
+        .opacity-50 {
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .dashboard-container {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #loadingIndicator {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Smooth appearance for product grid */
+        #productGrid {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Pagination hover effects */
+        .page-link:hover:not(.disabled):not(.active) {
+            background-color: #DAA520 !important;
+            color: #2C3E50 !important;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        .page-link.disabled {
+            background-color: #BDC3C7 !important;
+            color: #7F8C8D !important;
+            cursor: not-allowed;
+        }
+    </style>
+}
