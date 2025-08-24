@@ -19,18 +19,18 @@ namespace ProductDashboard.Controllers
 
         public IActionResult Index()
         {
+            // Return the main view without loading products initially
+            // Products will be loaded via AJAX when user navigates to Products
+            return View();
+        }
+
+        public PartialViewResult HomeContent()
+        {
             var viewModel = new ProductListViewModel
             {
-                Products = _productService.GetProducts(page: 1, pageSize: PageSize),
-                Categories = _productService.GetCategories(),
-                CurrentPage = 1,
-                PageSize = PageSize
+                Categories = _productService.GetCategories()
             };
-
-            viewModel.TotalProducts = _productService.GetProductCount();
-            viewModel.TotalPages = (int)Math.Ceiling((double)viewModel.TotalProducts / PageSize);
-
-            return View(viewModel);
+            return PartialView("_HomeContent", viewModel);
         }
 
         public PartialViewResult ProductList(string searchTerm = "", int? categoryId = null, int page = 1)
@@ -47,7 +47,8 @@ namespace ProductDashboard.Controllers
                     TotalProducts = totalProducts,
                     TotalPages = (int)Math.Ceiling((double)totalProducts / PageSize),
                     SearchTerm = searchTerm,
-                    CategoryId = categoryId
+                    CategoryId = categoryId,
+                    Categories = _productService.GetCategories() // Add categories for the filter dropdown
                 };
 
                 return PartialView("~/Views/Product/_ProductList.cshtml", viewModel);
@@ -61,9 +62,20 @@ namespace ProductDashboard.Controllers
                     Products = new List<Product>(),
                     CurrentPage = 1,
                     TotalProducts = 0,
-                    TotalPages = 0
+                    TotalPages = 0,
+                    Categories = _productService.GetCategories()
                 });
             }
+        }
+
+        public PartialViewResult Promotions()
+        {
+            return PartialView("_Promotions");
+        }
+
+        public PartialViewResult Community()
+        {
+            return PartialView("_Community");
         }
 
         public IActionResult DebugPagination()

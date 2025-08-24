@@ -1,0 +1,45 @@
+﻿@model ProductDashboard.Models.ViewModels.ProductListViewModel
+
+<div class="hero-section text-center py-5" style="background: linear-gradient(to right, #FDF6E3, #FFFFFF); border-radius: 12px;">
+    <div class="container">
+        <h1 class="display-4" style="font-family: 'Playfair Display', serif; color: #2C3E50;">
+            Welcome to Golden Fork
+        </h1>
+        <p class="lead" style="color: #7F8C8D;">
+            Discover delicious dishes and culinary experiences
+        </p>
+        <button class="btn mt-3" onclick="loadProductsView()" style="background-color: #E67E22; border: none; color: #2C3E50;">
+            <i class="ri-restaurant-line me-2"></i>Browse Our Menu
+        </button>
+    </div>
+</div>
+
+<div class="featured-categories mt-5">
+    <h2 class="text-center mb-4" style="font-family: 'Playfair Display', serif; color: #2C3E50;">Popular Categories</h2>
+    <div class="row">
+        @if (Model?.Categories != null)
+        {
+            foreach (var category in Model.Categories.Take(3))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card border-0 text-center" style="background-color: #ECF0F1;">
+                        <div class="card-body">
+                            <i class="ri-restaurant-line" style="font-size: 2rem; color: #E67E22;"></i>
+                            <h5 class="card-title mt-2" style="color: #2C3E50;">@category.Name</h5>
+                            <button class="btn btn-sm mt-2" onclick="loadProductsByCategory(@category.Id)" style="background-color: #DAA520; color: #2C3E50; border: none;">
+                                View Items
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    function loadProductsByCategory(categoryId) {
+        $('#categoryFilter').val(categoryId);
+        loadProductsView();
+    }
+</script>

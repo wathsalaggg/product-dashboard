@@ -3,39 +3,42 @@
         <!-- First Row: Logo + Navigation + Cart -->
         <div class="d-flex justify-content-between align-items-center w-100 py-2">
             <!-- Brand Logo -->
-            <a class="navbar-brand d-flex align-items-center m-0" href="@Url.Action("Index", "Home")">
-                <img src="~/images/layout/project-logo.png" alt="logo" style="height: 32px; margin-right: 8px;" />
-                <span class="fs-4" style="font-family: 'Playfair Display', serif; color: #DAA520;">
+            <a class="navbar-brand d-flex align-items-center m-0" href="#" onclick="loadHomeView(); return false;" style="transition: transform 0.3s ease;">
+                <img src="~/images/layout/project-logo.png" alt="logo" style="height: 32px; margin-right: 8px; transition: transform 0.3s ease;" />
+                <span class="fs-4" style="font-family: 'Playfair Display', serif; color: #DAA520; transition: color 0.3s ease;">
                     Golden Fork
                 </span>
             </a>
 
-            <!-- Navigation Links - Styled to match theme -->
+            <!-- Navigation Links -->
             <div class="d-flex align-items-center d-none d-md-flex">
-                <!-- Hidden on mobile, visible on medium screens and up -->
                 <ul class="navbar-nav list-group-horizontal" style="font-family: 'Playfair Display', serif;">
                     <li class="nav-item mx-3">
-                        <a class="nav-link" href="#" style="color: #ECF0F1; font-size: 1.1rem; position: relative;">
+                        <a class="nav-link active" href="#" onclick="loadHomeView(); return false;"
+                           style="color: #DAA520; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
                             Home
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(1); transition: transform 0.3s ease;"></span>
                         </a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link active" href="#" style="color: #DAA520; font-size: 1.1rem; position: relative;">
+                        <a class="nav-link" href="#" onclick="loadProductsView(); return false;"
+                           style="color: #ECF0F1; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
                             Products
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(1);"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s ease;"></span>
                         </a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link" href="#" style="color: #ECF0F1; font-size: 1.1rem; position: relative;">
+                        <a class="nav-link" href="#" onclick="loadPromotionsView(); return false;"
+                           style="color: #ECF0F1; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
                             Promotions
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s ease;"></span>
                         </a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link" href="#" style="color: #ECF0F1; font-size: 1.1rem; position: relative;">
+                        <a class="nav-link" href="#" onclick="loadCommunityView(); return false;"
+                           style="color: #ECF0F1; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
                             Community
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s ease;"></span>
                         </a>
                     </li>
                 </ul>
@@ -43,65 +46,72 @@
 
             <!-- Cart Button -->
             <div class="d-flex align-items-center">
-                <button class="btn position-relative" id="cartBtn" style="background-color: #E67E22; border: none; color: #2C3E50;">
+                <button class="btn position-relative" id="cartBtn"
+                        style="background-color: #E67E22; border: none; color: #2C3E50; transition: all 0.3s ease;">
                     <i class="ri-shopping-cart-line"></i>
-                    <span class="badge position-absolute top-0 start-100 translate-middle" style="background-color: #ECF0F1; color: #2C3E50;" id="cartCount">0</span>
+                    <span class="badge position-absolute top-0 start-100 translate-middle"
+                          style="background-color: #ECF0F1; color: #2C3E50;" id="cartCount">0</span>
                 </button>
 
-                <!-- Mobile Menu Toggle (Hamburger) -->
-                <button class="navbar-toggler ms-3 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavMenu" aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Toggle navigation" style="border: none;">
+                <!-- Mobile Menu Toggle -->
+                <button class="navbar-toggler ms-3 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavMenu"
+                        aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Toggle navigation"
+                        style="border: none; transition: transform 0.3s ease;">
                     <span style="color: #ECF0F1; font-size: 1.5rem;">☰</span>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu (Collapsed by default) -->
+        <!-- Mobile Navigation Menu -->
         <div class="collapse d-md-none mt-2" id="mobileNavMenu">
             <ul class="navbar-nav" style="font-family: 'Playfair Display', serif;">
                 <li class="nav-item py-2">
-                    <a class="nav-link text-center" href="#" style="color: #ECF0F1; font-size: 1.1rem;">Home</a>
+                    <a class="nav-link text-center active" href="#" onclick="loadHomeView(); return false;"
+                       style="color: #DAA520; font-size: 1.1rem; transition: all 0.3s ease; background-color: rgba(218, 165, 32, 0.1); border-radius: 8px;">
+                        Home
+                    </a>
                 </li>
                 <li class="nav-item py-2">
-                    <a class="nav-link text-center active" href="#" style="color: #DAA520; font-size: 1.1rem;">Products</a>
+                    <a class="nav-link text-center" href="#" onclick="loadProductsView(); return false;"
+                       style="color: #ECF0F1; font-size: 1.1rem; transition: all 0.3s ease;">
+                        Products
+                    </a>
                 </li>
                 <li class="nav-item py-2">
-                    <a class="nav-link text-center" href="#" style="color: #ECF0F1; font-size: 1.1rem;">Promotions</a>
+                    <a class="nav-link text-center" href="#" onclick="loadPromotionsView(); return false;"
+                       style="color: #ECF0F1; font-size: 1.1rem; transition: all 0.3s ease;">
+                        Promotions
+                    </a>
                 </li>
                 <li class="nav-item py-2">
-                    <a class="nav-link text-center" href="#" style="color: #ECF0F1; font-size: 1.1rem;">Community</a>
+                    <a class="nav-link text-center" href="#" onclick="loadCommunityView(); return false;"
+                       style="color: #ECF0F1; font-size: 1.1rem; transition: all 0.3s ease;">
+                        Community
+                    </a>
                 </li>
             </ul>
         </div>
 
-        <!-- Second Row: Search + Categories -->
-        <div class="row w-100 g-2 py-2 align-items-center">
-            <!-- Category Dropdown -->
+        <!-- Search and Filter Row (initially hidden) -->
+        <div class="row w-100 g-2 py-2 align-items-center" id="searchFilterRow" style="display: none;">
             <div class="col-md-4">
-                <select class="form-select border-0" id="categoryFilter" style="background-color: #ECF0F1;">
+                <select class="form-select border-0" id="categoryFilter"
+                        style="background-color: #ECF0F1; transition: all 0.3s ease;">
                     <option value="">All Categories</option>
-                    <!-- Dynamically generate categories from your ViewModel -->
                     @if (Model?.Categories != null)
                     {
                         foreach (var category in Model.Categories)
                         {
-                            <option value="@category.Id" selected="@(Model.CategoryId == category.Id?.ToString())">
-                                @category.Name
-                            </option>
+                            <option value="@category.Id">@category.Name</option>
                         }
                     }
                 </select>
             </div>
-
-            <!-- Search Input -->
             <div class="col-md-8">
                 <div class="input-group">
-                    <input type="text"
-                           class="form-control border-0"
-                           id="searchInput"
-                           placeholder="Find a dish..."
-                           value="@Model?.SearchTerm"
-                           style="background-color: #ECF0F1;">
-                    <span class="input-group-text bg-light border-0">
+                    <input type="text" class="form-control border-0" id="searchInput" placeholder="Find a dish..."
+                           style="background-color: #ECF0F1; transition: all 0.3s ease;">
+                    <span class="input-group-text bg-light border-0" style="transition: all 0.3s ease;">
                         <i class="ri-search-line"></i>
                     </span>
                 </div>
@@ -109,3 +119,77 @@
         </div>
     </div>
 </nav>
+
+<style>
+    /* Desktop Hover Effects */
+    .nav-link:not(.active):hover {
+        color: #DAA520 !important;
+        transform: translateY(-2px);
+    }
+
+        .nav-link:not(.active):hover .position-absolute {
+            transform: scaleX(1) !important;
+        }
+
+    .navbar-brand:hover {
+        transform: scale(1.05);
+    }
+
+        .navbar-brand:hover img {
+            transform: rotate(-5deg);
+        }
+
+        .navbar-brand:hover span {
+            color: #E67E22 !important;
+        }
+
+    #cartBtn:hover {
+        background-color: #DAA520 !important;
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .navbar-toggler:hover {
+        transform: rotate(90deg);
+    }
+
+    /* Mobile Hover Effects */
+    .navbar-nav .nav-link:not(.active):hover {
+        color: #DAA520 !important;
+        background-color: rgba(218, 165, 32, 0.1) !important;
+        transform: translateX(5px);
+    }
+
+    /* Form Elements Hover Effects */
+    #categoryFilter:hover,
+    #searchInput:hover {
+        background-color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
+    }
+
+    .input-group-text:hover {
+        background-color: #DAA520 !important;
+        color: #2C3E50 !important;
+    }
+
+    /* Active State Enhancements */
+    .nav-link.active {
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    /* Smooth transitions for all interactive elements */
+    .nav-link, .navbar-brand, #cartBtn, .navbar-toggler,
+    #categoryFilter, #searchInput, .input-group-text {
+        transition: all 0.3s ease !important;
+    }
+
+        /* Focus states for accessibility */
+        .nav-link:focus,
+        #categoryFilter:focus,
+        #searchInput:focus {
+            outline: 2px solid #DAA520;
+            outline-offset: 2px;
+        }
+</style>

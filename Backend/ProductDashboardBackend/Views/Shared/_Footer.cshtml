@@ -3,9 +3,9 @@
         <div class="row">
             <!-- Brand Column -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="~/images/layout/project-logo.png" alt="logo" style="height: 32px; margin-right: 8px;" />
-                    <span class="fs-4" style="font-family: 'Playfair Display', serif; color: #DAA520;">
+                <div class="d-flex align-items-center mb-3" style="transition: transform 0.3s ease;">
+                    <img src="~/images/layout/project-logo.png" alt="logo" style="height: 32px; margin-right: 8px; transition: transform 0.3s ease;" />
+                    <span class="fs-4" style="font-family: 'Playfair Display', serif; color: #DAA520; transition: color 0.3s ease;">
                         Golden Fork
                     </span>
                 </div>
@@ -13,16 +13,16 @@
                     Serving exquisite culinary experiences since 2024. Where every meal tells a story and every flavor creates a memory.
                 </p>
                 <div class="d-flex gap-3">
-                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem;">
+                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem; transition: all 0.3s ease;">
                         <i class="ri-facebook-fill"></i>
                     </a>
-                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem;">
+                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem; transition: all 0.3s ease;">
                         <i class="ri-instagram-line"></i>
                     </a>
-                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem;">
+                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem; transition: all 0.3s ease;">
                         <i class="ri-twitter-x-line"></i>
                     </a>
-                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem;">
+                    <a href="#" class="text-decoration-none" style="color: #E67E22; font-size: 1.5rem; transition: all 0.3s ease;">
                         <i class="ri-youtube-fill"></i>
                     </a>
                 </div>
@@ -35,22 +35,22 @@
                 </h5>
                 <ul class="list-unstyled mt-3">
                     <li class="mb-2">
-                        <a href="#" class="text-decoration-none" style="color: #ECF0F1; transition: color 0.3s ease;">
+                        <a href="#" onclick="loadHomeView(); return false;" class="text-decoration-none footer-link" style="color: #ECF0F1;">
                             <i class="ri-arrow-right-s-line me-1" style="color: #E67E22;"></i> Home
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" class="text-decoration-none" style="color: #DAA520; transition: color 0.3s ease;">
+                        <a href="#" onclick="loadProductsView(); return false;" class="text-decoration-none footer-link" style="color: #ECF0F1;">
                             <i class="ri-arrow-right-s-line me-1" style="color: #E67E22;"></i> Products
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" class="text-decoration-none" style="color: #ECF0F1; transition: color 0.3s ease;">
+                        <a href="#" onclick="loadPromotionsView(); return false;" class="text-decoration-none footer-link" style="color: #ECF0F1;">
                             <i class="ri-arrow-right-s-line me-1" style="color: #E67E22;"></i> Promotions
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" class="text-decoration-none" style="color: #ECF0F1; transition: color 0.3s ease;">
+                        <a href="#" onclick="loadCommunityView(); return false;" class="text-decoration-none footer-link" style="color: #ECF0F1;">
                             <i class="ri-arrow-right-s-line me-1" style="color: #E67E22;"></i> Community
                         </a>
                     </li>
@@ -63,19 +63,19 @@
                     Contact Us
                 </h5>
                 <ul class="list-unstyled mt-3">
-                    <li class="mb-3 d-flex align-items-start">
+                    <li class="mb-3 d-flex align-items-start contact-item">
                         <i class="ri-map-pin-2-fill me-2 mt-1" style="color: #E67E22;"></i>
                         <span style="color: #BDC3C7;">123 Gourmet Street,<br>Foodie District, Colombo</span>
                     </li>
-                    <li class="mb-3 d-flex align-items-center">
+                    <li class="mb-3 d-flex align-items-center contact-item">
                         <i class="ri-phone-fill me-2" style="color: #E67E22;"></i>
                         <span style="color: #BDC3C7;">+94 11 234 5678</span>
                     </li>
-                    <li class="mb-3 d-flex align-items-center">
+                    <li class="mb-3 d-flex align-items-center contact-item">
                         <i class="ri-mail-fill me-2" style="color: #E67E22;"></i>
                         <span style="color: #BDC3C7;">info@goldenfork.lk</span>
                     </li>
-                    <li class="d-flex align-items-center">
+                    <li class="d-flex align-items-center contact-item">
                         <i class="ri-time-fill me-2" style="color: #E67E22;"></i>
                         <span style="color: #BDC3C7;">Open: 10AM - 10PM Daily</span>
                     </li>
@@ -91,8 +91,8 @@
                     Subscribe to receive updates on new dishes and exclusive promotions.
                 </p>
                 <div class="input-group mb-3">
-                    <input type="email" class="form-control border-0" placeholder="Your email address" style="background-color: #ECF0F1;">
-                    <button class="btn" type="button" style="background-color: #E67E22; color: #2C3E50;">
+                    <input type="email" class="form-control border-0 newsletter-input" placeholder="Your email address" style="background-color: #ECF0F1;">
+                    <button class="btn newsletter-btn" type="button" style="background-color: #E67E22; color: #2C3E50;">
                         <i class="ri-send-plane-fill"></i>
                     </button>
                 </div>
@@ -107,12 +107,117 @@
                         &copy; @DateTime.Now.Year Golden Fork Restaurant. All rights reserved.
                     </p>
                     <div>
-                        <a href="#" class="text-decoration-none me-3" style="color: #BDC3C7; font-size: 0.9rem;">Privacy Policy</a>
-                        <a href="#" class="text-decoration-none me-3" style="color: #BDC3C7; font-size: 0.9rem;">Terms of Service</a>
-                        <a href="#" class="text-decoration-none" style="color: #BDC3C7; font-size: 0.9rem;">Sitemap</a>
+                        <a href="#" class="text-decoration-none me-3 footer-link" style="color: #BDC3C7; font-size: 0.9rem;">Privacy Policy</a>
+                        <a href="#" class="text-decoration-none me-3 footer-link" style="color: #BDC3C7; font-size: 0.9rem;">Terms of Service</a>
+                        <a href="#" class="text-decoration-none footer-link" style="color: #BDC3C7; font-size: 0.9rem;">Sitemap</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </footer>
+
+<style>
+    /* Footer Link Hover Effects */
+    .footer-link {
+        transition: all 0.3s ease !important;
+        position: relative;
+    }
+
+        .footer-link:hover {
+            color: #DAA520 !important;
+            transform: translateX(5px);
+        }
+
+            .footer-link:hover i {
+                color: #DAA520 !important;
+                transform: scale(1.2);
+            }
+
+    /* Social Media Icons */
+    .footer a[style*="font-size: 1.5rem"]:hover {
+        color: #DAA520 !important;
+        transform: translateY(-3px) scale(1.2);
+        text-shadow: 0 4px 8px rgba(218, 165, 32, 0.3);
+    }
+
+    /* Brand Logo Hover */
+    .footer .d-flex.align-items-center:hover {
+        transform: scale(1.02);
+    }
+
+        .footer .d-flex.align-items-center:hover img {
+            transform: rotate(-5deg);
+        }
+
+        .footer .d-flex.align-items-center:hover span {
+            color: #E67E22 !important;
+        }
+
+    /* Contact Items */
+    .contact-item {
+        transition: all 0.3s ease;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+        .contact-item:hover {
+            background-color: rgba(236, 240, 241, 0.1);
+            transform: translateX(3px);
+        }
+
+            .contact-item:hover i {
+                color: #DAA520 !important;
+                transform: scale(1.2);
+            }
+
+    /* Newsletter Form */
+    .newsletter-input {
+        transition: all 0.3s ease !important;
+    }
+
+        .newsletter-input:focus {
+            background-color: #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+
+    .newsletter-btn {
+        transition: all 0.3s ease !important;
+    }
+
+        .newsletter-btn:hover {
+            background-color: #DAA520 !important;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+    /* Copyright Links */
+    .footer-link[style*="font-size: 0.9rem"]:hover {
+        color: #DAA520 !important;
+        text-decoration: underline;
+    }
+
+    /* Section Headers */
+    h5[style*="border-bottom: 2px solid #E67E22"] {
+        transition: all 0.3s ease;
+    }
+
+        h5[style*="border-bottom: 2px solid #E67E22"]:hover {
+            color: #E67E22 !important;
+            border-bottom-color: #DAA520 !important;
+        }
+
+    /* Smooth transitions for all interactive elements */
+    .footer a, .footer button, .footer input, .footer .contact-item {
+        transition: all 0.3s ease !important;
+    }
+
+        /* Focus states for accessibility */
+        .footer a:focus,
+        .footer button:focus,
+        .footer input:focus {
+            outline: 2px solid #DAA520;
+            outline-offset: 2px;
+        }
+</style>
