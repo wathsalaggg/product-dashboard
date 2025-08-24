@@ -1,6 +1,6 @@
 ﻿@model ProductDashboard.Models.ViewModels.ProductListViewModel
 
-<div class="row" id="productGrid">
+<div class="row g-4" id="productGrid">
     @if (Model.Products.Any())
     {
         @foreach (var product in Model.Products)
@@ -11,9 +11,16 @@
     else
     {
         <div class="col-12">
-            <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle me-2"></i>
-                No products found matching your criteria.
+            <div class="text-center py-5" style="background: linear-gradient(to right, #FDF6E3, #FFFFFF); border-radius: 12px;">
+                <i class="ri-restaurant-line" style="font-size: 3rem; color: #E67E22;"></i>
+                <h4 class="mt-3" style="font-family: 'Playfair Display', serif; color: #2C3E50;">No dishes found</h4>
+                <p class="text-muted" style="color: #7F8C8D !important;">
+                    We couldn't find any dishes matching your criteria.<br>
+                    Try adjusting your search or filters.
+                </p>
+                <button class="btn mt-2" onclick="clearFilters()" style="background-color: #E67E22; color: #2C3E50; border: none;">
+                    <i class="ri-filter-off-line me-1"></i>Clear All Filters
+                </button>
             </div>
         </div>
     }
@@ -21,26 +28,56 @@
 
 @if (Model.TotalPages > 1)
 {
-    <div class="row mt-4">
+    <div class="row mt-5">
         <div class="col-12">
             <nav aria-label="Product pagination">
                 <ul class="pagination justify-content-center">
                     <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                        <a class="page-link" href="#" data-page="@(Model.CurrentPage - 1)">
-                            <i class="fas fa-chevron-left"></i>
+                        <a class="page-link border-0" href="#" data-page="@(Model.CurrentPage - 1)"
+                           style="background-color: #ECF0F1; color: #2C3E50; margin: 0 2px; border-radius: 8px;">
+                            <i class="ri-arrow-left-s-line"></i>
                         </a>
                     </li>
+
+                    @if (Model.CurrentPage > 3)
+                    {
+                        <li class="page-item">
+                            <a class="page-link border-0" href="#" data-page="1"
+                               style="background-color: #ECF0F1; color: #2C3E50; margin: 0 2px; border-radius: 8px;">1</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link border-0" style="background-color: transparent; color: #7F8C8D; margin: 0 2px;">...</span>
+                        </li>
+                    }
 
                     @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
                     {
                         <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                            <a class="page-link" href="#" data-page="@i">@i</a>
+                            <a class="page-link border-0" href="#" data-page="@i"
+                               style="@(Model.CurrentPage == i ? "background-color: #E67E22; color: #2C3E50;" : "background-color: #ECF0F1; color: #2C3E50;")
+                                              margin: 0 2px; border-radius: 8px;">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages - 2)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link border-0" style="background-color: transparent; color: #7F8C8D; margin: 0 2px;">...</span>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link border-0" href="#" data-page="@Model.TotalPages"
+                               style="background-color: #ECF0F1; color: #2C3E50; margin: 0 2px; border-radius: 8px;">
+                                @Model.TotalPages
+                            </a>
                         </li>
                     }
 
                     <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                        <a class="page-link" href="#" data-page="@(Model.CurrentPage + 1)">
-                            <i class="fas fa-chevron-right"></i>
+                        <a class="page-link border-0" href="#" data-page="@(Model.CurrentPage + 1)"
+                           style="background-color: #ECF0F1; color: #2C3E50; margin: 0 2px; border-radius: 8px;">
+                            <i class="ri-arrow-right-s-line"></i>
                         </a>
                     </li>
                 </ul>
@@ -49,10 +86,39 @@
     </div>
 }
 
-<div class="row mt-3">
+<div class="row mt-4">
     <div class="col-12 text-center">
-        <small class="text-muted">
-            Showing @(((Model.CurrentPage - 1) * Model.PageSize) + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalProducts)) of @Model.TotalProducts products
+        <small style="color: #7F8C8D; font-family: 'Lato', sans-serif;">
+            <i class="ri-restaurant-line me-1" style="color: #E67E22;"></i>
+            Showing @(((Model.CurrentPage - 1) * Model.PageSize) + 1) to
+            @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalProducts)) of
+            @Model.TotalProducts delicious dishes
         </small>
     </div>
 </div>
+
+<!-- Add this CSS for pagination hover effects -->
+<style>
+    .page-link:hover:not(.disabled):not(.active) {
+        background-color: #DAA520 !important;
+        color: #2C3E50 !important;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+
+    .page-link.disabled {
+        background-color: #BDC3C7 !important;
+        color: #7F8C8D !important;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+    function clearFilters() {
+        // Implement your clear filters logic here
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categoryFilter').value = '';
+        // Trigger your search/filter function
+        loadProducts();
+    }
+</script>

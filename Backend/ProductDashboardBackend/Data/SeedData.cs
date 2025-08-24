@@ -1,44 +1,67 @@
-﻿//using ProductDashboardBackend.Models.Entities;
-//using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductDashboardBackend.Data;
 
-//namespace ProductDashboardBackend.Data
-//{
-//    public static class SeedData
-//    {
-//        public static async Task SeedAsync(ApplicationDbContext context)
-//        {
-//            if (await context.Categories.AnyAsync()) return;
+namespace ProductDashboardBackend.Data
+{
+    public static class SqlSeedData
+    {
+        public static async Task InitializeWithSqlAsync(ApplicationDbContext context)
+        {
+            // Only seed if categories table is empty
+            if (await context.Categories.AnyAsync())
+            {
+                Console.WriteLine("Database already seeded. Skipping...");
+                return;
+            }
 
-//            var categories = new List<Category>
-//            {
-//                new Category { Name = "Starters", Description = "Appetizers and light bites", IconName = "utensils" },
-//                new Category { Name = "Main Course", Description = "Delicious main dishes", IconName = "drumstick-bite" },
-//                new Category { Name = "Desserts", Description = "Sweet treats and cakes", IconName = "ice-cream" },
-//                new Category { Name = "Beverages", Description = "Hot and cold drinks", IconName = "coffee" }
-//            };
+            Console.WriteLine("Seeding database with raw SQL...");
 
-//            await context.Categories.AddRangeAsync(categories);
-//            await context.SaveChangesAsync();
+            // Raw SQL to insert categories
+            var categoriesSql = @"
+                INSERT INTO Categories (Name, Description) VALUES 
+                ('Starters', 'Appetizers and light bites to begin your meal'),
+                ('Main Course', 'Delicious and satisfying main dishes'),
+                ('Desserts', 'Sweet treats and delightful endings to your meal'),
+                ('Beverages', 'Refreshing hot and cold drinks'),
+                ('Sides', 'Perfect accompaniments to your main dishes');
+            ";
 
-//            var products = new List<Product>
-//            {
-//                // Starters
-//                new Product { Name = "Garlic Bread", Description = "Crispy garlic-flavored bread slices", Price = 4.99m, ImageUrl = "/images/garlic-bread.jpg", CategoryId = 1, StockQuantity = 50, Brand = "Chef’s Special", Rating = 4.3 },
-//                new Product { Name = "Caesar Salad", Description = "Fresh romaine lettuce with Caesar dressing", Price = 6.99m, ImageUrl = "/images/caesar-salad.jpg", CategoryId = 1, StockQuantity = 40, Brand = "Fresh Greens", Rating = 4.5 },
+            await context.Database.ExecuteSqlRawAsync(categoriesSql);
+            Console.WriteLine("Categories seeded successfully!");
 
-//                // Main Course
-//                new Product { Name = "Margherita Pizza", Description = "Classic cheese and tomato pizza", Price = 11.99m, ImageUrl = "/images/margherita-pizza.jpg", CategoryId = 2, StockQuantity = 20, Brand = "Pizza Hub", Rating = 4.7 },
-//                new Product { Name = "Grilled Chicken Burger", Description = "Juicy grilled chicken with fries", Price = 9.49m, ImageUrl = "/images/chicken-burger.jpg", CategoryId = 2, StockQuantity = 25, Brand = "Burger Shack", Rating = 4.6 },
+            // Raw SQL to insert products
+            var productsSql = @"
+                INSERT INTO Products (Name, Description, Price, ImageUrl, CategoryId, InStock, CreatedDate) VALUES 
+                -- Starters (Category 1)
+                ('Garlic Bread', 'Crispy garlic-flavored bread slices with herb butter', 4.99, '/images/garlic-bread.jpg', 1, TRUE, DATE_SUB(NOW(), INTERVAL 30 DAY)),
+                ('Caesar Salad', 'Fresh romaine lettuce with classic Caesar dressing, croutons, and parmesan', 6.99, '/images/caesar-salad.jpg', 1, TRUE, DATE_SUB(NOW(), INTERVAL 25 DAY)),
+                ('Mozzarella Sticks', 'Crispy fried mozzarella served with marinara sauce', 7.99, '/images/mozzarella-sticks.jpg', 1, TRUE, DATE_SUB(NOW(), INTERVAL 20 DAY)),
+                
+                -- Main Course (Category 2)
+                ('Margherita Pizza', 'Classic pizza with fresh mozzarella, tomato sauce, and basil', 11.99, '/images/margherita-pizza.jpg', 2, TRUE, DATE_SUB(NOW(), INTERVAL 15 DAY)),
+                ('Grilled Chicken Burger', 'Juicy grilled chicken breast with lettuce, tomato, and special sauce', 9.49, '/images/chicken-burger.jpg', 2, TRUE, DATE_SUB(NOW(), INTERVAL 10 DAY)),
+                ('Spaghetti Carbonara', 'Creamy pasta with crispy bacon, eggs, and parmesan cheese', 12.99, '/images/carbonara.jpg', 2, TRUE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+                ('Grilled Salmon', 'Fresh Atlantic salmon grilled to perfection with seasonal vegetables', 15.99, '/images/grilled-salmon.jpg', 2, FALSE, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+                
+                -- Desserts (Category 3)
+                ('Chocolate Cake', 'Rich and moist chocolate cake with chocolate frosting', 5.99, '/images/chocolate-cake.jpg', 3, TRUE, DATE_SUB(NOW(), INTERVAL 18 DAY)),
+                ('Tiramisu', 'Classic Italian dessert with coffee-soaked ladyfingers and mascarpone', 6.49, '/images/tiramisu.jpg', 3, TRUE, DATE_SUB(NOW(), INTERVAL 12 DAY)),
+                ('Cheesecake', 'Creamy New York style cheesecake with berry compote', 6.99, '/images/cheesecake.jpg', 3, TRUE, DATE_SUB(NOW(), INTERVAL 8 DAY)),
+                
+                -- Beverages (Category 4)
+                ('Cappuccino', 'Freshly brewed cappuccino with perfect foam', 3.99, '/images/cappuccino.jpg', 4, TRUE, DATE_SUB(NOW(), INTERVAL 22 DAY)),
+                ('Fresh Orange Juice', 'Freshly squeezed orange juice, served chilled', 4.49, '/images/orange-juice.jpg', 4, TRUE, DATE_SUB(NOW(), INTERVAL 16 DAY)),
+                ('Iced Tea', 'Refreshing iced tea with lemon and mint', 3.49, '/images/iced-tea.jpg', 4, FALSE, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+                
+                -- Sides (Category 5)
+                ('French Fries', 'Crispy golden fries with sea salt', 3.99, '/images/french-fries.jpg', 5, TRUE, DATE_SUB(NOW(), INTERVAL 14 DAY)),
+                ('Garden Salad', 'Mixed greens with vegetables and house dressing', 4.99, '/images/garden-salad.jpg', 5, TRUE, DATE_SUB(NOW(), INTERVAL 9 DAY)),
+                ('Garlic Mashed Potatoes', 'Creamy mashed potatoes with roasted garlic', 4.49, '/images/mashed-potatoes.jpg', 5, TRUE, DATE_SUB(NOW(), INTERVAL 4 DAY));
+            ";
 
-//                // Desserts
-//                new Product { Name = "Chocolate Cake", Description = "Rich and moist chocolate cake slice", Price = 5.99m, ImageUrl = "/images/chocolate-cake.jpg", CategoryId = 3, StockQuantity = 30, Brand = "Sweet Bites", Rating = 4.8 },
-
-//                // Beverages
-//                new Product { Name = "Cappuccino", Description = "Freshly brewed cappuccino coffee", Price = 3.99m, ImageUrl = "/images/cappuccino.jpg", CategoryId = 4, StockQuantity = 40, Brand = "Coffee House", Rating = 4.7 }
-//            };
-
-//            await context.Products.AddRangeAsync(products);
-//            await context.SaveChangesAsync();
-//        }
-//    }
-//}
+            await context.Database.ExecuteSqlRawAsync(productsSql);
+            Console.WriteLine("Products seeded successfully!");
+            Console.WriteLine("Seeded 5 categories and 16 products.");
+        }
+    }
+}

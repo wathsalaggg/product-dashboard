@@ -29,5 +29,23 @@ namespace ProductDashboard.Controllers
 
             return View(viewModel);
         }
+
+        public PartialViewResult ProductList(string searchTerm = "", int? categoryId = null, int page = 1)
+        {
+            var products = _productService.GetProducts(searchTerm, categoryId, page, 9);
+            var totalProducts = _productService.GetProductCount(searchTerm, categoryId);
+
+            var viewModel = new ProductListViewModel
+            {
+                Products = products,
+                CurrentPage = page,
+                TotalProducts = totalProducts,
+                TotalPages = (int)Math.Ceiling((double)totalProducts / 9),
+                SearchTerm = searchTerm,
+                CategoryId = categoryId
+            };
+
+            return PartialView("_ProductList", viewModel);
+        }
     }
 }
