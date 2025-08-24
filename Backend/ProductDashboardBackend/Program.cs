@@ -77,51 +77,121 @@
 
 //app.Run();
 
+
+
+
+
+
+
+
+
+
+
+
+
+//using Microsoft.EntityFrameworkCore;
+//using ProductDashboardBackend.Data;
+//using System;
+
+//public class Program
+//{
+//    public static void Main(string[] args)
+//    {
+//        var builder = WebApplication.CreateBuilder(args);
+
+//        // Add services
+//        builder.Services.AddControllersWithViews(options =>
+//        {
+//            // Register the custom model binder for comma-separated values
+//            options.ModelBinderProviders.Insert(0, new CommaSeparatedModelBinderProvider());
+//        });
+
+//        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//        builder.Services.AddScoped<IProductService, ProductService>();
+
+//        var app = builder.Build();
+
+//        // Configure pipeline
+//        if (app.Environment.IsDevelopment())
+//        {
+//            app.UseDeveloperExceptionPage();
+//        }
+
+//        app.UseRouting();
+
+//        // Enable static files (for CSS/JS)
+//        app.UseStaticFiles();
+
+//        // Map default controller route
+//        app.MapControllerRoute(
+//            name: "default",
+//            pattern: "{controller=Home}/{action=Index}/{id?}"
+//        );
+
+//        // Keep API controllers mapped as well
+//        app.MapControllers();
+
+//        app.Run();
+//    }
+//}
+
 using Microsoft.EntityFrameworkCore;
+using ProductDashboard.Services;
 using ProductDashboardBackend.Data;
-using System;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
-public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Add Entity Framework with MySQL
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 33)) // Replace with your MySQL version
+    )
+);
+
+// Register ProductService
+builder.Services.AddScoped<ProductService>();
+
+// Add session support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
 {
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-        // Add services
-        builder.Services.AddControllersWithViews(options =>
-        {
-            // Register the custom model binder for comma-separated values
-            options.ModelBinderProviders.Insert(0, new CommaSeparatedModelBinderProvider());
-        });
+var app = builder.Build();
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-        builder.Services.AddScoped<IProductService, ProductService>();
-
-        var app = builder.Build();
-
-        // Configure pipeline
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-
-        app.UseRouting();
-
-        // Enable static files (for CSS/JS)
-        app.UseStaticFiles();
-
-        // Map default controller route
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}"
-        );
-
-        // Keep API controllers mapped as well
-        app.MapControllers();
-
-        app.Run();
-    }
+// Ensure database is created and seeded
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated();
 }
 
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+app.UseSession(); // Enable session middleware
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

@@ -1,41 +1,33 @@
-//using System.Diagnostics;
-//using Microsoft.AspNetCore.Mvc;
-//using ProductDashboardBackend.Models;
-
-//namespace ProductDashboardBackend.Controllers;
-
-//public class HomeController : Controller
-//{
-//    private readonly ILogger<HomeController> _logger;
-
-//    public HomeController(ILogger<HomeController> logger)
-//    {
-//        _logger = logger;
-//    }
-
-//    public IActionResult Index()
-//    {
-//        return View();
-//    }
-
-//    public IActionResult Privacy()
-//    {
-//        return View();
-//    }
-
-//    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-//    public IActionResult Error()
-//    {
-//        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-//    }
-//}
-
 using Microsoft.AspNetCore.Mvc;
+using ProductDashboard.Models.ViewModels;
+using ProductDashboard.Services;
+using ProductDashboardBackend.Data;
 
-public class HomeController : Controller
+namespace ProductDashboard.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        return View(); 
+        private readonly ProductService _productService;
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _productService = new ProductService(context);
+        }
+
+        public IActionResult Index()
+        {
+            var viewModel = new ProductListViewModel
+            {
+                Products = _productService.GetProducts(page: 1, pageSize: 9),
+                Categories = _productService.GetCategories(),
+                CurrentPage = 1,
+                PageSize = 9
+            };
+
+            viewModel.TotalProducts = _productService.GetProductCount();
+            viewModel.TotalPages = (int)Math.Ceiling((double)viewModel.TotalProducts / viewModel.PageSize);
+
+            return View(viewModel);
+        }
     }
 }

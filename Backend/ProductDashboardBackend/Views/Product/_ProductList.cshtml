@@ -1,0 +1,58 @@
+﻿@model ProductDashboard.Models.ViewModels.ProductListViewModel
+
+<div class="row" id="productGrid">
+    @if (Model.Products.Any())
+    {
+        @foreach (var product in Model.Products)
+        {
+            @await Html.PartialAsync("_ProductCard", product)
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle me-2"></i>
+                No products found matching your criteria.
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Product pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="#" data-page="@(Model.CurrentPage - 1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                            <a class="page-link" href="#" data-page="@i">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="#" data-page="@(Model.CurrentPage + 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+}
+
+<div class="row mt-3">
+    <div class="col-12 text-center">
+        <small class="text-muted">
+            Showing @(((Model.CurrentPage - 1) * Model.PageSize) + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalProducts)) of @Model.TotalProducts products
+        </small>
+    </div>
+</div>

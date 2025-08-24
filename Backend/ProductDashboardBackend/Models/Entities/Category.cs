@@ -1,13 +1,16 @@
-﻿namespace ProductDashboardBackend.Models.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductDashboard.Models
 {
     public class Category
     {
-        public int Id { get; set; }   
-        public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public string IconName { get; set; } = null!;
+        public int Id { get; set; }
 
-        // Navigation property
-        public List<Product> Products { get; set; } = new();
+        [Required]
+        [StringLength(100)]
+        public string Name { get; set; }
+
+        [StringLength(500)]
+        public string Description { get; set; }
     }
 }

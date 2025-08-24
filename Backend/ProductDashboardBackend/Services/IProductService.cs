@@ -1,80 +1,86 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProductDashboardBackend.Data;
-using System;
+﻿//using Microsoft.EntityFrameworkCore;
+//using ProductDashboard.Models;
+//using ProductDashboardBackend.Data;
+//using System;
 
-public interface IProductService
-{
-    Task<PagedResult<Product>> GetFilteredProductsAsync(ProductFilterParameters filters);
-}
+//public interface IProductService
+//{
+//    Task<PagedResult<Product>> GetFilteredProductsAsync(ProductFilterParameters filters);
+//}
 
-public class ProductService : IProductService
-{
-    private readonly ApplicationDbContext _context;
+//public class ProductService : IProductService
+//{
+//    private readonly ApplicationDbContext _context;
 
-    public ProductService(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+//    public ProductService(ApplicationDbContext context)
+//    {
+//        _context = context;
+//    }
 
-    public async Task<PagedResult<Product>> GetFilteredProductsAsync(ProductFilterParameters filters)
-    {
-        var query = _context.Products.AsQueryable();
+//    public async Task<PagedResult<Product>> GetFilteredProductsAsync(ProductFilterParameters filters)
+//    {
+//        var query = _context.Products.AsQueryable();
 
-        // Apply filters
-        query = ApplyFilters(query, filters);
+//        // Apply filters
+//        query = ApplyFilters(query, filters);
 
-        // Get total count for pagination
-        var totalCount = await query.CountAsync();
+//        // Get total count for pagination
+//        var totalCount = await query.CountAsync();
 
-        // Apply pagination
-        var products = await query
-            .Skip((filters.Page - 1) * filters.PageSize)
-            .Take(filters.PageSize)
-            .ToListAsync();
+//        // Apply pagination
+//        var products = await query
+//            .Skip((filters.Page - 1) * filters.PageSize)
+//            .Take(filters.PageSize)
+//            .ToListAsync();
 
-        return new PagedResult<Product>
-        {
-            Items = products,
-            TotalCount = totalCount,
-            Page = filters.Page,
-            PageSize = filters.PageSize,
-            TotalPages = (int)Math.Ceiling((double)totalCount / filters.PageSize)
-        };
-    }
+//        return new PagedResult<Product>
+//        {
+//            Items = products,
+//            TotalCount = totalCount,
+//            Page = filters.Page,
+//            PageSize = filters.PageSize,
+//            TotalPages = (int)Math.Ceiling((double)totalCount / filters.PageSize)
+//        };
+//    }
 
-    private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductFilterParameters filters)
-    {
-        // Search term filter
-        if (!string.IsNullOrWhiteSpace(filters.S))
-        {
-            query = query.Where(p => p.Name.Contains(filters.S) ||
-                                   p.Description.Contains(filters.S));
-        }
+//    internal Product GetProduct(int productId)
+//    {
+//        throw new NotImplementedException();
+//    }
 
-        // Category filter
-        if (filters.CategoryIds != null && filters.CategoryIds.Any())
-        {
-            query = query.Where(p => p.CategoryIds.Any(categoryId =>
-                filters.CategoryIds.Contains(categoryId)));
-        }
+//    private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductFilterParameters filters)
+//    {
+//        // Search term filter
+//        if (!string.IsNullOrWhiteSpace(filters.S))
+//        {
+//            query = query.Where(p => p.Name.Contains(filters.S) ||
+//                                   p.Description.Contains(filters.S));
+//        }
 
-        // Rating filters
-        if (filters.RatingGte.HasValue)
-        {
-            query = query.Where(p => p.Rating >= filters.RatingGte.Value);
-        }
+//        // Category filter
+//        if (filters.CategoryIds != null && filters.CategoryIds.Any())
+//        {
+//            query = query.Where(p => p.CategoryIds.Any(categoryId =>
+//                filters.CategoryIds.Contains(categoryId)));
+//        }
 
-        if (filters.RatingLte.HasValue)
-        {
-            query = query.Where(p => p.Rating <= filters.RatingLte.Value);
-        }
+//        // Rating filters
+//        if (filters.RatingGte.HasValue)
+//        {
+//            query = query.Where(p => p.Rating >= filters.RatingGte.Value);
+//        }
 
-        // Quantity filter
-        if (filters.QuantityGte.HasValue)
-        {
-            query = query.Where(p => p.Quantity >= filters.QuantityGte.Value);
-        }
+//        if (filters.RatingLte.HasValue)
+//        {
+//            query = query.Where(p => p.Rating <= filters.RatingLte.Value);
+//        }
 
-        return query;
-    }
-}
+//        // Quantity filter
+//        if (filters.QuantityGte.HasValue)
+//        {
+//            query = query.Where(p => p.Quantity >= filters.QuantityGte.Value);
+//        }
+
+//        return query;
+//    }
+//}

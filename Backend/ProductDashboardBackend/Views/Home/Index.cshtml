@@ -1,11 +1,44 @@
-﻿@* Views/Home/Index.cshtml *@
+﻿@model ProductDashboard.Models.ViewModels.ProductListViewModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Product Dashboard";
 }
- 
-<div class="home-page-container">
-    <h1>Welcome to Product Dashboard</h1>
-<p>This is the Home Index page.</p>
+
+<div class="dashboard-container">
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="search-container">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search products..." value="@Model.SearchTerm">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <select class="form-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">
+                        @category.Name
+                    </option>
+
+                }
+            </select>
+        </div>
     </div>
 
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="text-center d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
+    <!-- Product List Container -->
+    <div id="productContainer">
+        
+        @await Html.PartialAsync("~/Views/Product/_ProductList.cshtml", Model)
+
+    </div>
+</div>
