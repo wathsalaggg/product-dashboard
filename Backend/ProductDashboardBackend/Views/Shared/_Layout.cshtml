@@ -3,28 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Product Dashboard</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+
+    <title>@ViewData["Title"] Product Dashboard</title>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="@Url.Action("Index", "Home")">
-                    <i class="fas fa-store me-2"></i>Product Dashboard
-                </a>
-                <div class="navbar-nav ms-auto">
-                    <button class="btn btn-outline-light position-relative" id="cartBtn">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle" id="cartCount">0</span>
-                    </button>
-                </div>
-            </div>
-        </nav>
-    </header>
+    @* Top Navbar Partial *@
+    @await Html.PartialAsync("_TopNavbar")
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -32,7 +22,10 @@
         </main>
     </div>
 
-    <!-- Modals will be loaded here -->
+    @* Footer Partial *@
+    @await Html.PartialAsync("_Footer")
+
+    @* Modals will be loaded here *@
     <div id="modalContainer"></div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

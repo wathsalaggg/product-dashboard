@@ -1,0 +1,111 @@
+﻿<nav class="navbar navbar-dark" style="background-color: #2C3E50;">
+    <div class="container">
+        <!-- First Row: Logo + Navigation + Cart -->
+        <div class="d-flex justify-content-between align-items-center w-100 py-2">
+            <!-- Brand Logo -->
+            <a class="navbar-brand d-flex align-items-center m-0" href="@Url.Action("Index", "Home")">
+                <img src="~/images/layout/project-logo.png" alt="logo" style="height: 32px; margin-right: 8px;" />
+                <span class="fs-4" style="font-family: 'Playfair Display', serif; color: #DAA520;">
+                    Golden Fork
+                </span>
+            </a>
+
+            <!-- Navigation Links - Styled to match theme -->
+            <div class="d-flex align-items-center d-none d-md-flex">
+                <!-- Hidden on mobile, visible on medium screens and up -->
+                <ul class="navbar-nav list-group-horizontal" style="font-family: 'Playfair Display', serif;">
+                    <li class="nav-item mx-3">
+                        <a class="nav-link" href="#" style="color: #ECF0F1; font-size: 1.1rem; position: relative;">
+                            Home
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s;"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a class="nav-link active" href="#" style="color: #DAA520; font-size: 1.1rem; position: relative;">
+                            Products
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(1);"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a class="nav-link" href="#" style="color: #ECF0F1; font-size: 1.1rem; position: relative;">
+                            Promotions
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s;"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a class="nav-link" href="#" style="color: #ECF0F1; font-size: 1.1rem; position: relative;">
+                            Community
+                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s;"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Cart Button -->
+            <div class="d-flex align-items-center">
+                <button class="btn position-relative" id="cartBtn" style="background-color: #E67E22; border: none; color: #2C3E50;">
+                    <i class="ri-shopping-cart-line"></i>
+                    <span class="badge position-absolute top-0 start-100 translate-middle" style="background-color: #ECF0F1; color: #2C3E50;" id="cartCount">0</span>
+                </button>
+
+                <!-- Mobile Menu Toggle (Hamburger) -->
+                <button class="navbar-toggler ms-3 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavMenu" aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Toggle navigation" style="border: none;">
+                    <span style="color: #ECF0F1; font-size: 1.5rem;">☰</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu (Collapsed by default) -->
+        <div class="collapse d-md-none mt-2" id="mobileNavMenu">
+            <ul class="navbar-nav" style="font-family: 'Playfair Display', serif;">
+                <li class="nav-item py-2">
+                    <a class="nav-link text-center" href="#" style="color: #ECF0F1; font-size: 1.1rem;">Home</a>
+                </li>
+                <li class="nav-item py-2">
+                    <a class="nav-link text-center active" href="#" style="color: #DAA520; font-size: 1.1rem;">Products</a>
+                </li>
+                <li class="nav-item py-2">
+                    <a class="nav-link text-center" href="#" style="color: #ECF0F1; font-size: 1.1rem;">Promotions</a>
+                </li>
+                <li class="nav-item py-2">
+                    <a class="nav-link text-center" href="#" style="color: #ECF0F1; font-size: 1.1rem;">Community</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Second Row: Search + Categories -->
+        <div class="row w-100 g-2 py-2 align-items-center">
+            <!-- Category Dropdown -->
+            <div class="col-md-4">
+                <select class="form-select border-0" id="categoryFilter" style="background-color: #ECF0F1;">
+                    <option value="">All Categories</option>
+                    <!-- Dynamically generate categories from your ViewModel -->
+                    @if (Model?.Categories != null)
+                    {
+                        foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id" selected="@(Model.CategoryId == category.Id?.ToString())">
+                                @category.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Search Input -->
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control border-0"
+                           id="searchInput"
+                           placeholder="Find a dish..."
+                           value="@Model?.SearchTerm"
+                           style="background-color: #ECF0F1;">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="ri-search-line"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

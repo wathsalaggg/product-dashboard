@@ -1,7 +1,5 @@
 ﻿@model ProductDashboard.Models.ViewModels.ProductListViewModel
-@{
-    ViewData["Title"] = "Product Dashboard";
-}
+
 
 <div class="dashboard-container">
     <!-- Search and Filter Section -->
@@ -9,7 +7,9 @@
         <div class="col-lg-8">
             <div class="search-container">
                 <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <span class="input-group-text">
+                        <i class="ri-search-line"></i>
+                    </span>
                     <input type="text" class="form-control" id="searchInput" placeholder="Search products..." value="@Model.SearchTerm">
                 </div>
             </div>
@@ -22,7 +22,6 @@
                     <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">
                         @category.Name
                     </option>
-
                 }
             </select>
         </div>
@@ -37,8 +36,6 @@
 
     <!-- Product List Container -->
     <div id="productContainer">
-        
         @await Html.PartialAsync("~/Views/Product/_ProductList.cshtml", Model)
-
     </div>
 </div>
