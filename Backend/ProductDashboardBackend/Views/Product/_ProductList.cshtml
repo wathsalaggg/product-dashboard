@@ -1,5 +1,48 @@
 ﻿@model ProductDashboard.Models.ViewModels.ProductListViewModel
 
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="px-4">
+                <h3 style="font-family: 'Playfair Display', serif; color: #2C3E50;">
+                    @if (!string.IsNullOrEmpty(Model.SearchTerm) || Model.CategoryId.HasValue)
+                    {
+                        <span>Search Results</span>
+                    }
+                    else
+                    {
+                        <span>All Products</span>
+                    }
+                </h3>
+                <p class="text-muted mb-0">
+                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                    {
+                        <span>Search: "@Model.SearchTerm"</span>
+                    }
+                    @if (Model.CategoryId.HasValue)
+                    {
+                        var category = Model.Categories.FirstOrDefault(c => c.Id == Model.CategoryId);
+                        if (category != null)
+                        {
+                            <span>• Category: @category.Name</span>
+                        }
+                    }
+                    @if (string.IsNullOrEmpty(Model.SearchTerm) && !Model.CategoryId.HasValue)
+                    {
+                        <span>Showing all products</span>
+                    }
+                </p>
+            </div>
+            @* @if (!string.IsNullOrEmpty(Model.SearchTerm) || Model.CategoryId.HasValue)
+            {
+                <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                    <i class="ri-close-line"></i> Clear Filters
+                </button>
+            } *@
+        </div>
+    </div>
+</div>
+
 <div class="row g-4" id="productGrid">
     @if (Model.Products.Any())
     {
@@ -55,7 +98,7 @@
                         <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
                             <a class="page-link border-0" href="javascript:void(0);" data-page="@i"
                                style="@(Model.CurrentPage == i ? "background-color: #E67E22; color: #2C3E50;" : "background-color: #ECF0F1; color: #2C3E50;")
-                                              margin: 0 2px; border-radius: 8px;">
+                                                      margin: 0 2px; border-radius: 8px;">
                                 @i
                             </a>
                         </li>
@@ -112,13 +155,3 @@
         cursor: not-allowed;
     }
 </style>
-
-<script>
-    function clearFilters() {
-        // Implement your clear filters logic here
-        document.getElementById('searchInput').value = '';
-        document.getElementById('categoryFilter').value = '';
-        // Trigger your search/filter function
-        loadProducts();
-    }
-</script>

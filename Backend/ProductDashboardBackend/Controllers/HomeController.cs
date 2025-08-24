@@ -19,9 +19,12 @@ namespace ProductDashboard.Controllers
 
         public IActionResult Index()
         {
-            // Return the main view without loading products initially
-            // Products will be loaded via AJAX when user navigates to Products
-            return View();
+            // Return the main view with categories for the filter dropdown
+            var viewModel = new ProductListViewModel
+            {
+                Categories = _productService.GetCategories()
+            };
+            return View(viewModel);
         }
 
         public PartialViewResult HomeContent()
@@ -48,7 +51,8 @@ namespace ProductDashboard.Controllers
                     TotalPages = (int)Math.Ceiling((double)totalProducts / PageSize),
                     SearchTerm = searchTerm,
                     CategoryId = categoryId,
-                    Categories = _productService.GetCategories() // Add categories for the filter dropdown
+                    Categories = _productService.GetCategories(),
+                    PageSize = PageSize
                 };
 
                 return PartialView("~/Views/Product/_ProductList.cshtml", viewModel);
@@ -63,7 +67,8 @@ namespace ProductDashboard.Controllers
                     CurrentPage = 1,
                     TotalProducts = 0,
                     TotalPages = 0,
-                    Categories = _productService.GetCategories()
+                    Categories = _productService.GetCategories(),
+                    PageSize = PageSize
                 });
             }
         }

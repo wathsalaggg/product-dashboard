@@ -55,7 +55,7 @@
 
                 <!-- Mobile Menu Toggle -->
                 <button class="navbar-toggler ms-3 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavMenu"
-                        aria-controls="mobileNavMenu" aria-expanded="false; aria-label="Toggle navigation"
+                        aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Toggle navigation"
                         style="border: none; transition: transform 0.3s ease;">
                     <span style="color: #ECF0F1; font-size: 1.5rem;">☰</span>
                 </button>
@@ -106,93 +106,19 @@
                     }
                 </select>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <div class="input-group">
                     <input type="text" class="form-control border-0" id="searchInput" placeholder="Find a dish..." style="background-color: #ECF0F1; transition: all 0.3s ease;">
-                    <span class="input-group-text bg-light border-0" style="transition: all 0.3s ease;">
+                    <span class="input-group-text bg-light border-0" style="transition: all 0.3s ease; cursor: pointer;" onclick="performSearch()">
                         <i class="ri-search-line"></i>
                     </span>
                 </div>
             </div>
+            <div class="col-md-2">
+                <button class="btn w-100" onclick="clearFilters()" style="background-color: #E67E22; color: #2C3E50; border: none;">
+                    <i class="ri-filter-off-line me-1"></i> Clear
+                </button>
+            </div>
         </div>
     </div>
 </nav>
-
-<style>
-    /* Desktop Hover Effects */
-    .nav-link:not(.active):hover {
-        color: #DAA520 !important;
-        transform: translateY(-2px);
-    }
-
-        .nav-link:not(.active):hover .position-absolute {
-            transform: scaleX(1) !important;
-        }
-
-    .navbar-brand:hover {
-        transform: scale(1.05);
-    }
-
-        .navbar-brand:hover img {
-            transform: rotate(-5deg);
-        }
-
-        .navbar-brand:hover span {
-            color: #E67E22 !important;
-        }
-
-    #cartBtn:hover {
-        background-color: #DAA520 !important;
-        transform: scale(1.1);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .navbar-toggler:hover {
-        transform: rotate(90deg);
-    }
-
-    /* Form Elements Hover Effects */
-    #categoryFilter:hover,
-    #searchInput:hover {
-        background-color: #FFFFFF !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transform: translateY(-1px);
-    }
-
-    .input-group-text:hover {
-        background-color: #DAA520 !important;
-        color: #2C3E50 !important;
-    }
-
-    /* Active State Enhancements */
-    .nav-link.active {
-        font-weight: 600;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-
-    /* Smooth transitions for all interactive elements */
-    .nav-link, .navbar-brand, #cartBtn, .navbar-toggler,
-    #categoryFilter, #searchInput, .input-group-text {
-        transition: all 0.3s ease !important;
-    }
-
-        /* Focus states for accessibility */
-        .nav-link:focus,
-        #categoryFilter:focus,
-        #searchInput:focus {
-            outline: 2px solid #DAA520;
-            outline-offset: 2px;
-        }
-
-    /* Ensure search filter row is always visible */
-    #searchFilterRow {
-        display: flex !important;
-    }
-</style>
-
-<script>
-    // Scroll to top when page loads or refreshes
-    window.addEventListener('load', function() {
-        window.scrollTo(0, 0);
-    });
-</script>

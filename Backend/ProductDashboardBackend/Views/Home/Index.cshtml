@@ -13,18 +13,110 @@
 
     <!-- Dynamic Content Container -->
     <div id="contentContainer">
-        <!-- Home content will be loaded here by default -->
+        <!-- Content will be loaded here dynamically -->
     </div>
 </div>
 
 @section Scripts {
     <script>
+        // Store all products for client-side filtering
+        let allProducts = [];
+
+        // Debounce function to prevent too many API calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Function to highlight search terms in the product listings
+        function highlightSearchTerms(searchTerm) {
+            if (!searchTerm || searchTerm.trim() === '') {
+                removeHighlights();
+                return;
+            }
+
+            const searchWords = searchTerm.split(' ').filter(word => word.length > 0);
+            if (searchWords.length === 0) return;
+
+            // Highlight in product names
+            $('.product-name').each(function() {
+                let html = $(this).data('original-text') || $(this).html();
+                $(this).data('original-text', html);
+
+                searchWords.forEach(word => {
+                    const regex = new RegExp(`(${escapeRegExp(word)})`, 'gi');
+                    html = html.replace(regex, '<span class="search-highlight">$1</span>');
+                });
+                $(this).html(html);
+            });
+
+            // Highlight in product descriptions
+            $('.product-description').each(function() {
+                let html = $(this).data('original-text') || $(this).html();
+                $(this).data('original-text', html);
+
+                searchWords.forEach(word => {
+                    const regex = new RegExp(`(${escapeRegExp(word)})`, 'gi');
+                    html = html.replace(regex, '<span class="search-highlight">$1</span>');
+                });
+                $(this).html(html);
+            });
+
+            // Highlight in product categories
+            $('.product-category').each(function() {
+                let html = $(this).data('original-text') || $(this).html();
+                $(this).data('original-text', html);
+
+                searchWords.forEach(word => {
+                    const regex = new RegExp(`(${escapeRegExp(word)})`, 'gi');
+                    html = html.replace(regex, '<span class="search-highlight">$1</span>');
+                });
+                $(this).html(html);
+            });
+        }
+
+        // Remove highlights from all elements
+        function removeHighlights() {
+            $('.product-name').each(function() {
+                if ($(this).data('original-text')) {
+                    $(this).html($(this).data('original-text'));
+                }
+            });
+
+            $('.product-description').each(function() {
+                if ($(this).data('original-text')) {
+                    $(this).html($(this).data('original-text'));
+                }
+            });
+
+            $('.product-category').each(function() {
+                if ($(this).data('original-text')) {
+                    $(this).html($(this).data('original-text'));
+                }
+            });
+        }
+
+        // Helper function to escape regex special characters
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
         $(document).ready(function () {
             // Scroll to top on page load
             window.scrollTo(0, 0);
 
             // Load home content by default
             loadHomeView();
+
+            // Setup search and filter functionality
+            setupSearchFilter();
 
             // Handle pagination clicks for products
             $(document).on('click', '.pagination .page-link[data-page]', function (e) {
@@ -34,13 +126,6 @@
                 var categoryId = $('#categoryFilter').val();
                 loadProducts(searchTerm, categoryId, page);
             });
-
-            // Handle search and filter changes
-            $('#searchInput, #categoryFilter').on('input change', function () {
-                var searchTerm = $('#searchInput').val();
-                var categoryId = $('#categoryFilter').val();
-                loadProducts(searchTerm, categoryId, 1);
-            });
         });
 
         // Navigation functions
@@ -49,8 +134,7 @@
             $('#contentContainer').load('@Url.Action("HomeContent", "Home")', function() {
                 hideLoading();
                 updateActiveNav('home');
-                $('#searchFilterRow').hide(); // Hide search for home
-                scrollToTop(); // Scroll to top after loading
+                scrollToTop();
             });
         }
 
@@ -59,8 +143,10 @@
             $('#contentContainer').load('@Url.Action("ProductList", "Home")', function() {
                 hideLoading();
                 updateActiveNav('products');
-                $('#searchFilterRow').show(); // Show search for products
-                scrollToTop(); // Scroll to top after loading
+                scrollToTop();
+
+                // Initialize products for client-side filtering
+                initializeProducts();
             });
         }
 
@@ -69,8 +155,7 @@
             $('#contentContainer').load('@Url.Action("Promotions", "Home")', function() {
                 hideLoading();
                 updateActiveNav('promotions');
-                $('#searchFilterRow').hide();
-                scrollToTop(); // Scroll to top after loading
+                scrollToTop();
             });
         }
 
@@ -79,12 +164,219 @@
             $('#contentContainer').load('@Url.Action("Community", "Home")', function() {
                 hideLoading();
                 updateActiveNav('community');
-                $('#searchFilterRow').hide();
-                scrollToTop(); // Scroll to top after loading
+                scrollToTop();
+            });
+        }
+
+        // Initialize products for client-side filtering
+        function initializeProducts() {
+            allProducts = [];
+            $('.product-card').each(function() {
+                const product = {
+                    element: $(this),
+                    name: $(this).find('.product-name').text().toLowerCase(),
+                    description: $(this).find('.product-description').text().toLowerCase(),
+                    categoryId: $(this).find('.product-category').data('category-id') || 0,
+                    category: $(this).find('.product-category').text().toLowerCase()
+                };
+                allProducts.push(product);
+            });
+
+            // Set up real-time filtering if we're on products view
+            if ($('.nav-link.active').text().trim() === 'Products') {
+                setupRealTimeFiltering();
+            }
+        }
+
+        // Set up real-time filtering for products
+        function setupRealTimeFiltering() {
+            // Handle search input with debounce
+            $('#searchInput').off('input').on('input', debounce(function() {
+                filterProducts();
+            }, 300));
+
+            // Handle category filter change
+            $('#categoryFilter').off('change').on('change', function() {
+                filterProducts();
+            });
+
+            // Handle search button click
+            $('.input-group-text').off('click').on('click', function() {
+                filterProducts();
+            });
+
+            // Handle Enter key in search input
+            $('#searchInput').off('keypress').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    filterProducts();
+                }
+            });
+
+            // Handle clear filters button
+            $('#clearFilters').off('click').on('click', function() {
+                clearFilters();
+            });
+        }
+
+        // Real-time filtering function
+        function filterProducts() {
+            const searchTerm = $('#searchInput').val().toLowerCase().trim();
+            const categoryId = $('#categoryFilter').val();
+
+            // Filter products
+            allProducts.forEach(product => {
+                let matchesSearch = true;
+                let matchesCategory = true;
+
+                // Check search term
+                if (searchTerm) {
+                    matchesSearch = product.name.includes(searchTerm) ||
+                                   product.description.includes(searchTerm) ||
+                                   product.category.includes(searchTerm);
+                }
+
+                // Check category filter
+                if (categoryId) {
+                    matchesCategory = product.categoryId == categoryId;
+                }
+
+                // Show or hide based on filters
+                if (matchesSearch && matchesCategory) {
+                    product.element.show();
+                } else {
+                    product.element.hide();
+                }
+            });
+
+            // Apply highlighting
+            highlightSearchTerms(searchTerm);
+
+            // Show message if no products found
+            const visibleCount = allProducts.filter(p => p.element.is(':visible')).length;
+            updateResultsMessage(visibleCount, searchTerm, categoryId);
+        }
+
+        // Update results message
+        function updateResultsMessage(visibleCount, searchTerm, categoryId) {
+            // Remove any existing messages
+            $('#noResultsMessage').remove();
+            $('#resultsCount').remove();
+
+            if (visibleCount === 0) {
+                let message = 'No products found';
+                if (searchTerm) message += ` matching "${searchTerm}"`;
+                if (categoryId) {
+                    const categoryName = $('#categoryFilter option:selected').text();
+                    message += ` in ${categoryName}`;
+                }
+
+                // Show no results message
+                $('.product-grid').append(`
+                    <div id="noResultsMessage" class="col-12 text-center py-5">
+                        <i class="ri-search-eye-line" style="font-size: 3rem; color: #BDC3C7;"></i>
+                        <h4 class="mt-3" style="font-family: 'Playfair Display', serif; color: #2C3E50;">${message}</h4>
+                        <p class="text-muted">Try adjusting your search or filters</p>
+                        <button class="btn mt-2" onclick="clearFilters()" style="background-color: #E67E22; color: #2C3E50; border: none;">
+                            <i class="ri-filter-off-line me-1"></i>Clear All Filters
+                        </button>
+                    </div>
+                `);
+            } else {
+                // Update results count
+                $('.product-grid').before(`
+                    <div id="resultsCount" class="row mb-3">
+                        <div class="col-12">
+                            <p class="text-muted">Showing ${visibleCount} of ${allProducts.length} products</p>
+                        </div>
+                    </div>
+                `);
+            }
+        }
+
+        // Handle search and filter functionality
+        function setupSearchFilter() {
+            // Handle search input with debounce
+            $('#searchInput').on('input', debounce(function() {
+                performSearch();
+            }, 300));
+
+            // Handle category filter change
+            $('#categoryFilter').on('change', function() {
+                performSearch();
+            });
+
+            // Handle search button click
+            $('.input-group-text').on('click', function() {
+                performSearch();
+            });
+
+            // Handle Enter key in search input
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    performSearch();
+                }
+            });
+        }
+
+        function performSearch() {
+            var searchTerm = $('#searchInput').val();
+            var categoryId = $('#categoryFilter').val();
+
+            // If we're on the products view, filter the products
+            if ($('.nav-link.active').text().trim() === 'Products') {
+                // If we have products loaded, use client-side filtering
+                if (allProducts.length > 0) {
+                    filterProducts();
+                } else {
+                    // Otherwise, load from server
+                    loadProducts(searchTerm, categoryId, 1);
+                }
+            }
+            // If we're not on products view, switch to it and apply filters
+            else {
+                loadProductsViewWithFilters(searchTerm, categoryId);
+            }
+        }
+
+        // Load products view with specific filters
+        function loadProductsViewWithFilters(searchTerm, categoryId) {
+            showLoading();
+            $('#contentContainer').load('@Url.Action("ProductList", "Home")', {
+                searchTerm: searchTerm,
+                categoryId: categoryId,
+                page: 1
+            }, function() {
+                hideLoading();
+                updateActiveNav('products');
+                scrollToTop();
+
+                // Initialize products for client-side filtering
+                initializeProducts();
+
+                // Apply highlighting
+                highlightSearchTerms(searchTerm);
             });
         }
 
         function loadProducts(searchTerm, categoryId, page) {
+            // If we're not on the products view, switch to it first
+            if ($('.nav-link.active').text().trim() !== 'Products') {
+                showLoading();
+                $('#contentContainer').load('@Url.Action("ProductList", "Home")', function() {
+                    hideLoading();
+                    updateActiveNav('products');
+                    scrollToTop();
+                    // Now perform the search
+                    performSearchWithParams(searchTerm, categoryId, page);
+                });
+            } else {
+                // We're already on products view, just perform the search
+                performSearchWithParams(searchTerm, categoryId, page);
+            }
+        }
+
+        // New function to actually perform the search with parameters
+        function performSearchWithParams(searchTerm, categoryId, page) {
             showLoading();
             $.ajax({
                 url: '@Url.Action("ProductList", "Home")',
@@ -96,15 +388,50 @@
                 },
                 success: function (result) {
                     $('#contentContainer').html(result);
-                    scrollToTop(); // Scroll to top after loading products
+                    scrollToTop();
+
+                    // Initialize products for client-side filtering
+                    initializeProducts();
+
+                    // Apply search term highlighting
+                    highlightSearchTerms(searchTerm);
+
+                    // Update the page title with filter info
+                    updatePageTitle(searchTerm, categoryId);
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading products:', error);
+                    $('#contentContainer').html(`
+                        <div class="alert alert-danger text-center mx-auto mt-5" style="max-width: 500px;">
+                            <i class="ri-error-warning-line"></i>
+                            <h5>Error Loading Products</h5>
+                            <p>Please try again later</p>
+                            <button class="btn btn-secondary" onclick="loadProducts('', '', 1)">Reload</button>
+                        </div>
+                    `);
                 },
                 complete: function () {
                     hideLoading();
                 }
             });
+        }
+
+        // Update page title based on filters
+        function updatePageTitle(searchTerm, categoryId) {
+            let title = "Products";
+
+            if (searchTerm) {
+                title = `Search: ${searchTerm} - ${title}`;
+            }
+
+            if (categoryId) {
+                const categoryName = $('#categoryFilter option:selected').text();
+                if (categoryName !== "All Categories") {
+                    title = `${categoryName} - ${title}`;
+                }
+            }
+
+            document.title = `${title} - Golden Fork`;
         }
 
         function updateActiveNav(activeItem) {
@@ -130,7 +457,25 @@
         function clearFilters() {
             $('#searchInput').val('');
             $('#categoryFilter').val('');
-            loadProducts('', '', 1);
+
+            // If we're on the products view with client-side filtering
+            if ($('.nav-link.active').text().trim() === 'Products' && allProducts.length > 0) {
+                // Show all products
+                allProducts.forEach(product => {
+                    product.element.show();
+                });
+
+                // Remove highlights
+                removeHighlights();
+
+                // Update results message
+                updateResultsMessage(allProducts.length, '', '');
+            } else {
+                // If we're on the products view, reload with cleared filters
+                if ($('.nav-link.active').text().trim() === 'Products') {
+                    loadProducts('', '', 1);
+                }
+            }
         }
 
         // Scroll to top function
@@ -140,9 +485,109 @@
                 behavior: 'smooth'
             });
         }
+
+        // Add to cart function
+        function addToCart(productId) {
+            // Implement your cart functionality here
+            console.log(`Adding product ${productId} to cart`);
+
+            // Update cart count
+            const currentCount = parseInt($('#cartCount').text()) || 0;
+            $('#cartCount').text(currentCount + 1);
+
+            // Show notification
+            const toast = $(`
+                <div class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="ri-checkbox-circle-fill"></i> Product added to cart
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(toast);
+            new bootstrap.Toast(toast[0]).show();
+
+            // Remove toast after animation
+            setTimeout(() => toast.remove(), 3000);
+        }
     </script>
 
     <style>
+        /* Desktop Hover Effects */
+        .nav-link:not(.active):hover {
+            color: #DAA520 !important;
+            transform: translateY(-2px);
+        }
+
+            .nav-link:not(.active):hover .position-absolute {
+                transform: scaleX(1) !important;
+            }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+            .navbar-brand:hover img {
+                transform: rotate(-5deg);
+            }
+
+            .navbar-brand:hover span {
+                color: #E67E22 !important;
+            }
+
+        #cartBtn:hover {
+            background-color: #DAA520 !important;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .navbar-toggler:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Form Elements Hover Effects */
+        #categoryFilter:hover,
+        #searchInput:hover {
+            background-color: #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-group-text:hover {
+            background-color: #DAA520 !important;
+            color: #2C3E50 !important;
+            cursor: pointer;
+        }
+
+        /* Active State Enhancements */
+        .nav-link.active {
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Smooth transitions for all interactive elements */
+        .nav-link, .navbar-brand, #cartBtn, .navbar-toggler,
+        #categoryFilter, #searchInput, .input-group-text {
+            transition: all 0.3s ease !important;
+        }
+
+            /* Focus states for accessibility */
+            .nav-link:focus,
+            #categoryFilter:focus,
+            #searchInput:focus {
+                outline: 2px solid #DAA520;
+                outline-offset: 2px;
+                box-shadow: 0 0 0 0.2rem rgba(218, 165, 32, 0.25);
+            }
+
+        /* Ensure search filter row is always visible */
+        #searchFilterRow {
+            display: flex !important;
+        }
+
         .opacity-50 {
             opacity: 0.5;
             transition: opacity 0.3s ease;
@@ -184,6 +629,57 @@
             background-color: #BDC3C7 !important;
             color: #7F8C8D !important;
             cursor: not-allowed;
+        }
+
+        /* Mobile responsiveness for search/filter row */
+        @@media (max-width: 768px) {
+            #searchFilterRow .col-md-4,
+            #searchFilterRow .col-md-6,
+            #searchFilterRow .col-md-2 {
+                margin-bottom: 0.5rem;
+            }
+
+            #searchFilterRow {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading state for filters */
+        .filter-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Search term highlighting */
+        .search-highlight {
+            background-color: #FFE066;
+            color: #2C3E50;
+            padding: 0 2px;
+            border-radius: 3px;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            animation: highlightPulse 1.5s ease-in-out;
+        }
+
+        @@keyframes highlightPulse {
+            0% {
+                background-color: #FFD43B;
+                box-shadow: 0 0 0 0 rgba(255, 212, 59, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 212, 59, 0);
+            }
+
+            100% {
+                background-color: #FFE066;
+                box-shadow: 0 0 0 0 rgba(255, 212, 59, 0);
+            }
+        }
+
+        /* Ensure text doesn't break with highlights */
+        .product-name, .product-description, .product-category {
+            overflow-wrap: break-word;
         }
     </style>
 }

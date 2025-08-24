@@ -39,7 +39,17 @@
 
 <script>
     function loadProductsByCategory(categoryId) {
+        // Set the category filter
         $('#categoryFilter').val(categoryId);
-        loadProductsView();
+
+        // Load products view with the category filter applied
+        showLoading();
+        $('#contentContainer').load('@Url.Action("ProductList", "Home")', {
+            categoryId: categoryId
+        }, function() {
+            hideLoading();
+            updateActiveNav('products');
+            scrollToTop();
+        });
     }
 </script>
