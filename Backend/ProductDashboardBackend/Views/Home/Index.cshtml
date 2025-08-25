@@ -17,6 +17,64 @@
     </div>
 </div>
 
+<!-- Product Details Modal -->
+<div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 700px;">
+        <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: 2px solid #E67E22; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">
+            <div class="modal-header" style="background: linear-gradient(to right, #2C3E50, #34495E); color: #ECF0F1; border: none;">
+                <h5 class="modal-title" id="productDetailsModalLabel" style="font-family: 'Playfair Display', serif;">
+                    <i class="ri-restaurant-2-line me-2"></i>Product Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-md-5 position-relative">
+                        <img id="modalProductImage" src="" class="img-fluid" alt="Product Image" style="height: 100%; min-height: 300px; object-fit: cover;">
+                        <button id="downloadImageBtn" class="btn position-absolute top-0 end-0 m-2"
+                                style="background: rgba(236, 240, 241, 0.9); border-radius: 50%; width: 40px; height: 40px;"
+                                title="Download Image">
+                            <i class="ri-download-line" style="color: #2C3E50;"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="p-3">
+                            <input type="hidden" id="modalProductId" value="" />
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 id="modalProductName" style="font-family: 'Playfair Display', serif; color: #2C3E50;"></h4>
+                                <span id="modalProductCategory" class="badge rounded-pill px-2 py-1"
+                                      style="background-color: #E67E22; color: #2C3E50; font-size: 0.7rem;"></span>
+                            </div>
+
+                            <hr style="border-color: #ECF0F1; margin: 0.5rem 0;">
+
+                            <p id="modalProductDescription" class="mb-3" style="color: #34495E; line-height: 1.5; font-size: 0.9rem;"></p>
+
+                            <div class="mb-3">
+                                <h4 id="modalProductPrice" style="font-family: 'Playfair Display', serif; color: #2C3E50; margin-bottom: 0.2rem;"></h4>
+                                <small class="text-muted" style="color: #7F8C8D !important;">per serving</small>
+                            </div>
+
+                            <div id="modalStockStatus" class="mb-3">
+                                <!-- Stock status will be inserted here -->
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn add-to-cart-modal-btn py-2" data-product-id="" style="background-color: #27AE60; color: white; border: none;">
+                                    <i class="ri-shopping-cart-line me-2"></i>Add to Order
+                                </button>
+                                <button class="btn py-2" style="background-color: #2C3E50; color: #ECF0F1; border: none;" data-bs-dismiss="modal">
+                                    <i class="ri-close-line me-2"></i>Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         // Store all products for client-side filtering
@@ -108,15 +166,118 @@
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
+        // Updated add to cart function
+        function addToCart(productId) {
+            // Add loading state to button
+            const buttons = $(`.add-to-cart-btn[data-product-id="${productId}"], .add-to-cart-modal-btn[data-product-id="${productId}"]`);
+            const originalText = buttons.html();
+            buttons.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-2"></i>Adding...');
+
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Home")',
+                type: 'POST',
+                data: { productId: productId, quantity: 1 },
+                success: function(response) {
+                    if (response.success) {
+                        // Update cart count
+                        $('#cartCount').text(response.totalItems);
+
+                        // Show success notification
+                        showNotification(response.message, 'success');
+
+                        // Add cart animation
+                        $('#cartBtn').addClass('cart-pulse');
+                        setTimeout(() => {
+                            $('#cartBtn').removeClass('cart-pulse');
+                        }, 1000);
+                    } else {
+                        showNotification('Error: ' + response.message, 'error');
+                    }
+                },
+                error: function() {
+                    showNotification('Error adding product to cart. Please try again.', 'error');
+                },
+                complete: function() {
+                    // Restore button state
+                    buttons.prop('disabled', false).html(originalText);
+                }
+            });
+        }
+
+        // Updated show notification function
+        function showNotification(message, type = 'success') {
+            const bgColor = type === 'success' ? 'bg-success' : 'bg-danger';
+            const icon = type === 'success' ? 'ri-checkbox-circle-fill' : 'ri-error-warning-fill';
+
+            const toast = $(`
+                <div class="toast align-items-center text-white ${bgColor} border-0 position-fixed bottom-0 end-0 m-3" role="alert" style="z-index: 9999;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="${icon} me-2"></i> ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(toast);
+            new bootstrap.Toast(toast[0]).show();
+
+            // Remove toast after animation
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Load cart view
+        function loadCartView() {
+            showLoading();
+            $('#contentContainer').load('@Url.Action("Cart", "Home")', function() {
+                hideLoading();
+                updateActiveNav('cart');
+                scrollToTop();
+            });
+        }
+
+        // Initialize cart count on page load
+        function initializeCartCount() {
+            $.ajax({
+                url: '@Url.Action("Cart", "Home")',
+                type: 'GET',
+                success: function(response) {
+                    // Extract cart count from the response
+                    const cartItems = $(response).find('.cart-item').length;
+                    if (cartItems > 0) {
+                        // Get total items from the response
+                        const totalItemsMatch = response.match(/Items \((\d+)\)/);
+                        if (totalItemsMatch) {
+                            $('#cartCount').text(totalItemsMatch[1]);
+                        } else {
+                            $('#cartCount').text(cartItems);
+                        }
+                    } else {
+                        $('#cartCount').text('0');
+                    }
+                },
+                error: function() {
+                    $('#cartCount').text('0');
+                }
+            });
+        }
+
         $(document).ready(function () {
             // Scroll to top on page load
             window.scrollTo(0, 0);
+
+            // Initialize cart count
+            initializeCartCount();
 
             // Load home content by default
             loadHomeView();
 
             // Setup search and filter functionality
             setupSearchFilter();
+
+            // Setup cart functionality
+            setupCartFunctionality();
 
             // Handle pagination clicks for products
             $(document).on('click', '.pagination .page-link[data-page]', function (e) {
@@ -126,7 +287,32 @@
                 var categoryId = $('#categoryFilter').val();
                 loadProducts(searchTerm, categoryId, page);
             });
+
+            // Handle cart button click
+            $('#cartBtn').on('click', function(e) {
+                e.preventDefault();
+                loadCartView();
+            });
         });
+
+        // Setup cart functionality
+        function setupCartFunctionality() {
+            // Handle add to cart from product cards
+            $(document).on('click', '.add-to-cart-btn', function() {
+                const productId = $(this).data('product-id');
+                addToCart(productId);
+            });
+
+            // Handle add to cart from modal
+            $(document).on('click', '.add-to-cart-modal-btn', function() {
+                const productId = $(this).data('product-id') || $('#modalProductId').val();
+                addToCart(productId);
+
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('productDetailsModal'));
+                if (modal) modal.hide();
+            });
+        }
 
         // Navigation functions
         function loadHomeView() {
@@ -485,34 +671,6 @@
                 behavior: 'smooth'
             });
         }
-
-        // Add to cart function
-        function addToCart(productId) {
-            // Implement your cart functionality here
-            console.log(`Adding product ${productId} to cart`);
-
-            // Update cart count
-            const currentCount = parseInt($('#cartCount').text()) || 0;
-            $('#cartCount').text(currentCount + 1);
-
-            // Show notification
-            const toast = $(`
-                <div class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <i class="ri-checkbox-circle-fill"></i> Product added to cart
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            `);
-
-            $('body').append(toast);
-            new bootstrap.Toast(toast[0]).show();
-
-            // Remove toast after animation
-            setTimeout(() => toast.remove(), 3000);
-        }
     </script>
 
     <style>
@@ -607,15 +765,18 @@
         }
 
         @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+            from
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         }
 
         .page-link:hover:not(.disabled):not(.active) {
@@ -633,15 +794,16 @@
 
         /* Mobile responsiveness for search/filter row */
         @@media (max-width: 768px) {
-            #searchFilterRow .col-md-4,
-            #searchFilterRow .col-md-6,
-            #searchFilterRow .col-md-2 {
-                margin-bottom: 0.5rem;
-            }
+            #searchFilterRow .col-md-4, #searchFilterRow .col-md-6, #searchFilterRow .col-md-2
 
-            #searchFilterRow {
-                flex-direction: column;
-            }
+        {
+            margin-bottom: 0.5rem;
+        }
+
+        #searchFilterRow {
+            flex-direction: column;
+        }
+
         }
 
         /* Loading state for filters */
@@ -662,24 +824,55 @@
         }
 
         @@keyframes highlightPulse {
-            0% {
-                background-color: #FFD43B;
-                box-shadow: 0 0 0 0 rgba(255, 212, 59, 0.7);
-            }
+            0%
 
-            70% {
-                box-shadow: 0 0 0 10px rgba(255, 212, 59, 0);
-            }
+        {
+            background-color: #FFD43B;
+            box-shadow: 0 0 0 0 rgba(255, 212, 59, 0.7);
+        }
 
-            100% {
-                background-color: #FFE066;
-                box-shadow: 0 0 0 0 rgba(255, 212, 59, 0);
-            }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255, 212, 59, 0);
+        }
+
+        100% {
+            background-color: #FFE066;
+            box-shadow: 0 0 0 0 rgba(255, 212, 59, 0);
+        }
+
         }
 
         /* Ensure text doesn't break with highlights */
         .product-name, .product-description, .product-category {
             overflow-wrap: break-word;
+        }
+
+        /* Cart pulse animation */
+        @@keyframes cartPulse {
+            0%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+
+        }
+
+        .cart-pulse {
+            animation: cartPulse 0.6s ease-in-out;
+        }
+
+        /* Loading button states */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
     </style>
 }

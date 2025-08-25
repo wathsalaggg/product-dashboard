@@ -1,7 +1,7 @@
 ﻿@model ProductDashboard.Models.Product
 
 <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-    <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+    <div class="card h-100 shadow-sm border-0 product-card" style="border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
         <div class="card-img-container position-relative">
             <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/placeholder-food.jpg" : Model.ImageUrl)"
                  class="card-img-top" alt="@Model.Name"
@@ -26,7 +26,7 @@
                 <h5 class="card-title mb-0 product-name" style="font-family: 'Playfair Display', serif; color: #2C3E50;">
                     @Model.Name
                 </h5>
-                <span class="badge rounded-pill px-2 product-category" style="background-color: #E67E22; color: #2C3E50; font-size: 0.75rem;">
+                <span class="badge rounded-pill px-2 product-category" data-category-id="@Model.CategoryId" style="background-color: #E67E22; color: #2C3E50; font-size: 0.75rem;">
                     @Model.Category?.Name
                 </span>
             </div>
@@ -78,63 +78,6 @@
     </div>
 </div>
 
-<!-- Product Details Modal -->
-<div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel" aria-hidden="true" data-bs-backdrop="false">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 700px;">
-        <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: 2px solid #E67E22; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">
-            <div class="modal-header" style="background: linear-gradient(to right, #2C3E50, #34495E); color: #ECF0F1; border: none;">
-                <h5 class="modal-title" id="productDetailsModalLabel" style="font-family: 'Playfair Display', serif;">
-                    <i class="ri-restaurant-2-line me-2"></i>Product Details
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0">
-                <div class="row g-0">
-                    <div class="col-md-5 position-relative">
-                        <img id="modalProductImage" src="" class="img-fluid" alt="Product Image" style="height: 100%; min-height: 300px; object-fit: cover;">
-                        <button id="downloadImageBtn" class="btn position-absolute top-0 end-0 m-2"
-                                style="background: rgba(236, 240, 241, 0.9); border-radius: 50%; width: 40px; height: 40px;"
-                                title="Download Image">
-                            <i class="ri-download-line" style="color: #2C3E50;"></i>
-                        </button>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h4 id="modalProductName" style="font-family: 'Playfair Display', serif; color: #2C3E50;"></h4>
-                                <span id="modalProductCategory" class="badge rounded-pill px-2 py-1"
-                                      style="background-color: #E67E22; color: #2C3E50; font-size: 0.7rem;"></span>
-                            </div>
-
-                            <hr style="border-color: #ECF0F1; margin: 0.5rem 0;">
-
-                            <p id="modalProductDescription" class="mb-3" style="color: #34495E; line-height: 1.5; font-size: 0.9rem;"></p>
-
-                            <div class="mb-3">
-                                <h4 id="modalProductPrice" style="font-family: 'Playfair Display', serif; color: #2C3E50; margin-bottom: 0.2rem;"></h4>
-                                <small class="text-muted" style="color: #7F8C8D !important;">per serving</small>
-                            </div>
-
-                            <div id="modalStockStatus" class="mb-3">
-                                <!-- Stock status will be inserted here -->
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button class="btn add-to-cart-modal-btn py-2" style="background-color: #27AE60; color: white; border: none;">
-                                    <i class="ri-shopping-cart-line me-2"></i>Add to Order
-                                </button>
-                                <button class="btn py-2" style="background-color: #2C3E50; color: #ECF0F1; border: none;" data-bs-dismiss="modal">
-                                    <i class="ri-close-line me-2"></i>Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Add this CSS for hover effects and search highlighting -->
 <style>
     .card:hover {
@@ -171,58 +114,11 @@
         animation: highlightPulse 1.5s ease-in-out;
     }
 
-    @@keyframes highlightPulse {
-        0% {
-            background-color: #FFD43B;
-            box-shadow: 0 0 0 0 rgba(255, 212, 59, 0.7);
-        }
-
-        70% {
-            box-shadow: 0 0 0 10px rgba(255, 212, 59, 0);
-        }
-
-        100% {
-            background-color: #FFE066;
-            box-shadow: 0 0 0 0 rgba(255, 212, 59, 0);
-        }
-    }
+    
 
     /* Ensure text doesn't break with highlights */
     .product-name, .product-description, .product-category {
         overflow-wrap: break-word;
-    }
-
-    /* Modal styles */
-    .modal-content {
-        border: none;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    }
-
-    #downloadImageBtn:hover {
-        background: #ECF0F1 !important;
-        transform: scale(1.1);
-        transition: all 0.3s ease;
-    }
-
-    .add-to-cart-modal-btn:hover {
-        background-color: #219653 !important;
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
-    }
-
-    /* Fix for modal backdrop */
-    .modal-backdrop {
-        background-color: rgba(44, 62, 80, 0.5) !important;
-    }
-
-    /* Make modal more compact */
-    .modal-dialog {
-        max-width: 700px;
-    }
-
-    .modal-body {
-        max-height: 70vh;
-        overflow-y: auto;
     }
 </style>
 
@@ -235,6 +131,7 @@
         $('#modalProductPrice').text('LKR ' + productData.price);
         $('#modalProductCategory').text(productData.category);
         $('#modalProductImage').attr('src', productData.image);
+        $('#modalProductId').val(productData.id);
 
         // Set product ID for add to cart button
         $('.add-to-cart-modal-btn').data('product-id', productData.id);
@@ -276,7 +173,7 @@
         document.body.removeChild(link);
     }
 
-    // Document ready function
+    // Document ready function for this specific product card
     $(document).ready(function() {
         // Handle view details button click
         $(document).on('click', '.view-details-btn', function() {
@@ -300,32 +197,7 @@
             downloadProductImage(imageUrl, productName);
 
             // Show download confirmation
-            const toast = $(`
-                <div class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <i class="ri-download-line me-2"></i> Image download started
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            `);
-
-            $('body').append(toast);
-            new bootstrap.Toast(toast[0]).show();
-
-            // Remove toast after animation
-            setTimeout(() => toast.remove(), 3000);
-        });
-
-        // Handle add to cart from modal
-        $(document).on('click', '.add-to-cart-modal-btn', function() {
-            const productId = $(this).data('product-id');
-            addToCart(productId);
-
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('productDetailsModal'));
-            modal.hide();
+            showNotification('Image download started', 'success');
         });
 
         // Handle modal hidden event to ensure proper cleanup
@@ -339,32 +211,4 @@
             $('body').css('padding-right', '');
         });
     });
-
-    // Add to cart function
-    function addToCart(productId) {
-        // Implement your cart functionality here
-        console.log(`Adding product ${productId} to cart`);
-
-        // Update cart count
-        const currentCount = parseInt($('#cartCount').text()) || 0;
-        $('#cartCount').text(currentCount + 1);
-
-        // Show notification
-        const toast = $(`
-            <div class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="ri-checkbox-circle-fill"></i> Product added to cart
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                </div>
-            </div>
-        `);
-
-        $('body').append(toast);
-        new bootstrap.Toast(toast[0]).show();
-
-        // Remove toast after animation
-        setTimeout(() => toast.remove(), 3000);
-    }
 </script>

@@ -1,9 +1,13 @@
-﻿namespace ProductDashboard.Models.ViewModels
+﻿using ProductDashboard.Models;
+
+namespace ProductDashboard.Models.ViewModels
 {
     public class CartViewModel
     {
-        public List<CartItem> Items { get; set; } = new();
-        public decimal TotalAmount => Items.Sum(x => x.TotalPrice);
-        public int TotalItems => Items.Sum(x => x.Quantity);
+        public List<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public decimal Subtotal { get; set; }
+        public decimal Tax { get; set; }
+        public decimal Total { get; set; }
+        public int TotalItems { get; set; }
     }
 }

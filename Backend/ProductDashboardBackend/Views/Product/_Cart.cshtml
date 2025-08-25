@@ -1,0 +1,454 @@
+﻿@model ProductDashboard.Models.ViewModels.CartViewModel
+
+<div class="cart-container">
+    <div class="cart-header d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0 cart-title">
+            <i class="fas fa-shopping-cart me-2"></i>
+            Shopping Cart (<span class="total-items">@Model.TotalItems</span> items)
+        </h4>
+        <button class="btn btn-sm btn-outline-secondary" onclick="loadHomeView()">
+            <i class="fas fa-arrow-left me-1"></i> Continue Shopping
+        </button>
+    </div>
+
+    @if (Model.CartItems.Any())
+    {
+        <div class="cart-items">
+            @foreach (var item in Model.CartItems)
+            {
+                <div class="cart-item mb-3 p-3 border rounded" data-item-id="@item.Id">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                            {
+                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name"
+                                     class="img-fluid cart-item-image rounded" style="max-width: 60px; height: 60px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="no-image-placeholder rounded d-flex align-items-center justify-content-center"
+                                     style="width: 60px; height: 60px; background: #f8f9fa;">
+                                    <i class="fas fa-image text-muted"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-5">
+                            <h6 class="mb-1 product-name">@item.Product.Name</h6>
+                            <p class="text-muted small mb-1">$@item.UnitPrice.ToString("N2") each</p>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn btn-sm btn-outline-secondary decrease-quantity"
+                                        data-item-id="@item.Id"
+                                        title="Decrease quantity">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="quantity mx-2 fw-bold" style="min-width: 30px;">@item.Quantity</span>
+                                <button class="btn btn-sm btn-outline-secondary increase-quantity"
+                                        data-item-id="@item.Id"
+                                        title="Increase quantity">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-3 text-end">
+                            <div class="item-total fw-bold text-primary mb-1">$<span class="item-total-amount">@item.TotalPrice.ToString("N2")</span></div>
+                            <small class="text-muted">@item.Quantity x $@item.UnitPrice.ToString("N2")</small>
+                        </div>
+                        <div class="col-2 text-end">
+                            <button class="btn btn-sm btn-outline-danger remove-item"
+                                    data-item-id="@item.Id"
+                                    title="Remove from cart">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="cart-summary bg-light p-4 rounded mb-3">
+            <h5 class="mb-3">Order Summary</h5>
+            <div class="row mb-2">
+                <div class="col-6">Subtotal:</div>
+                <div class="col-6 text-end">$<span class="cart-subtotal">@Model.Subtotal.ToString("N2")</span></div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-6">Tax (10%):</div>
+                <div class="col-6 text-end">$<span class="cart-tax">@Model.Tax.ToString("N2")</span></div>
+            </div>
+            <div class="row total-row mb-3 pt-2 border-top">
+                <div class="col-6"><strong>Total:</strong></div>
+                <div class="col-6 text-end"><strong class="text-primary fs-5">$<span class="cart-total">@Model.Total.ToString("N2")</span></strong></div>
+            </div>
+        </div>
+
+        <div class="cart-actions">
+            <button class="btn btn-outline-danger btn-sm w-100 mb-2 clear-cart"
+                    data-bs-toggle="tooltip" title="Remove all items from cart">
+                <i class="fas fa-trash me-1"></i> Clear Entire Cart
+            </button>
+            <button class="btn btn-success btn-lg w-100 checkout-btn"
+                    data-bs-toggle="tooltip" title="Proceed to payment">
+                <i class="fas fa-credit-card me-2"></i> Proceed to Checkout
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart text-center py-5">
+            <div class="empty-cart-icon mb-3">
+                <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+            </div>
+            <h5 class="text-muted mb-2">Your cart is empty</h5>
+            <p class="text-muted mb-3">Add some delicious items to get started!</p>
+            <button class="btn btn-primary btn-lg" onclick="loadProductsView()">
+                <i class="fas fa-utensils me-2"></i> Start Shopping
+            </button>
+        </div>
+    }
+</div>
+
+<style>
+    .cart-container {
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .cart-item {
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .cart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+    .cart-item-image {
+        max-width: 60px;
+        max-height: 60px;
+        object-fit: cover;
+    }
+
+    .no-image-placeholder {
+        width: 60px;
+        height: 60px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #6c757d;
+        border-radius: 6px;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .quantity-controls .btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+    .quantity {
+        min-width: 30px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+
+    .total-row {
+        border-top: 2px solid #dee2e6;
+        padding-top: 12px;
+        margin-top: 8px;
+        font-size: 1.1em;
+    }
+
+    .empty-cart {
+        color: #6c757d;
+        padding: 3rem 1rem;
+    }
+
+    .empty-cart-icon {
+        opacity: 0.7;
+    }
+
+    .checkout-btn {
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+    .cart-summary {
+        border: 1px solid #e9ecef;
+    }
+
+    /* Animation for quantity changes */
+    .quantity-changing {
+        animation: quantityPulse 0.6s ease;
+    }
+
+    @@keyframes quantityPulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .cart-item .row > div {
+            margin-bottom: 8px;
+        }
+
+        .cart-item .text-end {
+            text-align: left !important;
+        }
+
+        .quantity-controls {
+            justify-content: flex-start;
+        }
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Initialize tooltips
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        console.log('Cart view loaded');
+    });
+
+    // Quantity increase
+    $(document).on('click', '.increase-quantity', function() {
+        const itemId = $(this).data('item-id');
+        const currentQty = parseInt($(`.cart-item[data-item-id="${itemId}"] .quantity`).text());
+        updateCartItemQuantity(itemId, currentQty + 1);
+    });
+
+    // Quantity decrease
+    $(document).on('click', '.decrease-quantity', function() {
+        const itemId = $(this).data('item-id');
+        const currentQty = parseInt($(`.cart-item[data-item-id="${itemId}"] .quantity`).text());
+
+        if (currentQty <= 1) {
+            removeCartItem(itemId);
+        } else {
+            updateCartItemQuantity(itemId, currentQty - 1);
+        }
+    });
+
+    // Remove item
+    $(document).on('click', '.remove-item', function() {
+        const itemId = $(this).data('item-id');
+        removeCartItem(itemId);
+    });
+
+    // Clear cart
+    $(document).on('click', '.clear-cart', function() {
+        clearCart();
+    });
+
+    // Checkout
+    $(document).on('click', '.checkout-btn', function() {
+        initiateCheckout();
+    });
+
+    async function updateCartItemQuantity(itemId, newQuantity) {
+        const quantityElement = $(`.cart-item[data-item-id="${itemId}"] .quantity`);
+
+        if (newQuantity <= 0) {
+            removeCartItem(itemId);
+            return;
+        }
+
+        // Show loading animation
+        quantityElement.addClass('quantity-changing');
+
+        try {
+            const response = await $.ajax({
+                url: '/Home/UpdateCartItem',
+                type: 'POST',
+                data: {
+                    itemId: itemId,
+                    quantity: newQuantity
+                },
+                dataType: 'json'
+            });
+
+            console.log('Update response:', response);
+
+            if (response.success) {
+                // Update the quantity display
+                quantityElement.text(newQuantity);
+
+                // Update item total (remove the $ sign from response since we add it in HTML)
+                $(`.cart-item[data-item-id="${itemId}"] .item-total-amount`).text(response.itemTotal);
+
+                // Update summary
+                updateCartSummary(response);
+
+                showNotification(`Quantity updated to ${newQuantity}`, 'success');
+            } else {
+                showNotification('Error updating quantity: ' + response.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            showNotification('Error updating quantity', 'error');
+        } finally {
+            quantityElement.removeClass('quantity-changing');
+        }
+    }
+
+    async function removeCartItem(itemId) {
+        if (!confirm('Are you sure you want to remove this item from your cart?')) {
+            return;
+        }
+
+        try {
+            const response = await $.ajax({
+                url: '/Home/RemoveFromCart',
+                type: 'POST',
+                data: {
+                    itemId: itemId
+                },
+                dataType: 'json'
+            });
+
+            console.log('Remove response:', response);
+
+            if (response.success) {
+                // Remove the item from the DOM
+                $(`.cart-item[data-item-id="${itemId}"]`).fadeOut(300, function() {
+                    $(this).remove();
+
+                    // Check if cart is empty now
+                    if ($('.cart-item').length === 0) {
+                        location.reload(); // Reload to show empty cart state
+                    } else {
+                        updateCartSummary(response);
+                    }
+                });
+
+                showNotification('Item removed from cart', 'success');
+            } else {
+                showNotification('Error removing item: ' + response.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
+            showNotification('Error removing item', 'error');
+        }
+    }
+
+    async function clearCart() {
+        if (!confirm('Are you sure you want to clear your entire cart? This cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await $.ajax({
+                url: '/Home/ClearCart',
+                type: 'POST',
+                dataType: 'json'
+            });
+
+            console.log('Clear response:', response);
+
+            if (response.success) {
+                // Reload the page to show empty cart state
+                location.reload();
+                showNotification('Cart cleared successfully', 'success');
+            } else {
+                showNotification('Error clearing cart: ' + response.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            showNotification('Error clearing cart', 'error');
+        }
+    }
+
+    function updateCartSummary(response) {
+        console.log('Updating summary with:', response);
+
+        // Update all summary values (response already includes formatted values)
+        $('.cart-subtotal').text(response.subtotal);
+        $('.cart-tax').text(response.tax);
+        $('.cart-total').text(response.total);
+
+        // Update cart header count
+        const totalItems = response.totalItems || 0;
+        $('.total-items').text(totalItems);
+
+        // Update global cart count if CartManager exists
+        if (typeof CartManager !== 'undefined') {
+            CartManager.updateCartCount(totalItems);
+        }
+
+        // Update navbar cart count if it exists
+        $('.cart-count').text(totalItems);
+    }
+
+    function initiateCheckout() {
+        // Check if cart is empty
+        if (@Model.TotalItems == 0) {
+            showNotification('Your cart is empty. Add some items first!', 'error');
+            return;
+        }
+
+        // Show checkout modal or redirect to checkout page
+        showNotification('Proceeding to checkout...', 'info');
+
+        // Simulate checkout process (replace with actual checkout logic)
+        setTimeout(() => {
+            // Here you would typically redirect to a checkout page
+            // window.location.href = '/Checkout';
+            showNotification('Checkout functionality would be implemented here', 'info');
+        }, 1000);
+    }
+
+    // Utility function for notifications
+    function showNotification(message, type) {
+        // Try to use existing notification system
+        if (typeof AjaxHelper !== 'undefined' && AjaxHelper.showNotification) {
+            AjaxHelper.showNotification(message, type);
+        } else {
+            // Fallback to alert
+            alert(message);
+        }
+    }
+
+    // Navigation functions - these should be available globally
+    function loadHomeView() {
+        if (typeof window.loadHomeView === 'function') {
+            window.loadHomeView();
+        } else {
+            window.location.href = '/';
+        }
+    }
+
+    function loadProductsView() {
+        if (typeof window.loadProductsView === 'function') {
+            window.loadProductsView();
+        } else {
+            window.location.href = '/';
+        }
+    }
+</script>

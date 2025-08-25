@@ -83,7 +83,7 @@ namespace ProductDashboard.Controllers
             var cart = GetCartFromSession();
             var viewModel = new CartViewModel
             {
-                Items = cart
+                CartItems = cart
             };
 
             return Json(new
@@ -100,7 +100,7 @@ namespace ProductDashboard.Controllers
                         totalPrice = x.TotalPrice,
                         imageUrl = x.Product.ImageUrl
                     }),
-                    totalAmount = viewModel.TotalAmount,
+                    totalAmount = viewModel.Total,
                     totalItems = viewModel.TotalItems
                 }
             });
