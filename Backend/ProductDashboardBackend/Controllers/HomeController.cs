@@ -37,6 +37,27 @@ namespace ProductDashboard.Controllers
 
         public IActionResult Index()
         {
+            // Check if React frontend is requested
+            bool useReact = Request.Query.ContainsKey("react") ||
+                           Request.Cookies.ContainsKey("prefersReact") ||
+                           // FIX: Use injected IConfiguration instead of 'builder'
+                           (HttpContext.RequestServices.GetService(typeof(IConfiguration)) is IConfiguration config &&
+                            config.GetValue<bool>("DefaultToReact", false));
+
+            if (useReact)
+            {
+                // Set a cookie to remember the preference
+                Response.Cookies.Append("prefersReact", "true", new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(30),
+                    HttpOnly = true
+                });
+
+                // If you're using SPA services, this will be handled automatically
+                // Otherwise, serve a simple HTML page that loads your React app
+                return View("ReactApp");
+            }
+
             // Return the main view with categories for the filter dropdown
             var viewModel = new ProductListViewModel
             {

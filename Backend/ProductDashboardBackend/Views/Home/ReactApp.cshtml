@@ -1,0 +1,42 @@
+﻿@* Views/Home/ReactApp.cshtml *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Dashboard - React Version</title>
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://localhost:3000" crossorigin>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- In production, this would point to your built React files -->
+    @if (Context.Request.Host.Host == "localhost")
+    {
+        <script type="module" src="http://localhost:3000/@vite/client"></script>
+        <script type="module" src="http://localhost:3000/src/main.tsx"></script>
+    }
+    else
+    {
+     
+        <script type="module" src="~/static/js/main.js"></script>
+    }
+</body>
+
+<noscript>
+  <div style="padding: 20px; text-align: center;">
+    <h2>JavaScript Required</h2>
+    <p>This view requires JavaScript. Please enable JavaScript or 
+      <a href="/Home/Index?react=false">switch to the classic view</a>.
+    </p>
+  </div>
+</noscript>
+
+<div id="root">
+  <div style="padding: 20px; text-align: center;">
+    <p>Loading React application...</p>
+    <p>If this takes too long, <a href="/Home/Index?react=false">switch to the classic view</a>.</p>
+  </div>
+</div>
+</html>
