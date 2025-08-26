@@ -53,8 +53,8 @@ namespace ProductDashboard.Controllers
                     HttpOnly = true
                 });
 
-                // If you're using SPA services, this will be handled automatically
-                // Otherwise, serve a simple HTML page that loads your React app
+                // If using SPA services, this will be handled automatically
+                // Otherwise, serve a simple HTML page that loads the React app
                 return View("ReactApp");
             }
 
@@ -419,7 +419,7 @@ namespace ProductDashboard.Controllers
             }
         }
 
-        // Alternative async version if you prefer
+        // Alternative async version
         private async Task<string> RenderPartialViewToStringAsync(string viewName, object model)
         {
             try

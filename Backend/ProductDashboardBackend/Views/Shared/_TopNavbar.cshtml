@@ -1,11 +1,29 @@
-﻿<nav class="navbar navbar-dark" style="background-color: #2C3E50;">
-    <div class="container">
-        <!-- First Row: Logo + Navigation + Cart -->
-        <div class="d-flex justify-content-between align-items-center w-100 py-2">
-            <!-- Brand Logo -->
+﻿<style>
+    .theme-yellow {
+        color: #DAA520;
+    }
+
+    .nav-styles {
+        height: 2px;
+        background: #DAA520;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link {
+        color: #ECF0F1;
+        font-size: 1.1rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<nav class="navbar navbar-dark" style="background-color: #2C3E50;">
+    <div class="container">       
+        <div class="d-flex justify-content-between align-items-center w-100 py-2">         
             <a class="navbar-brand d-flex align-items-center m-0" href="#" onclick="loadHomeView(); return false;" style="transition: transform 0.3s ease;">
                 <img src="~/images/layout/project-logo.png" alt="logo" style="height: 32px; margin-right: 8px; transition: transform 0.3s ease;" />
-                <span class="fs-4" style="font-family: 'Playfair Display', serif; color: #DAA520; transition: color 0.3s ease;">
+                <span class="fs-4 theme-yellow" style="font-family: 'Playfair Display', serif; transition: color 0.3s ease;">
                     Golden Fork
                 </span>
             </a>
@@ -14,31 +32,28 @@
             <div class="d-flex align-items-center d-none d-md-flex">
                 <ul class="navbar-nav list-group-horizontal" style="font-family: 'Playfair Display', serif;">
                     <li class="nav-item mx-3">
-                        <a class="nav-link active" href="#" onclick="loadHomeView(); return false;"
-                           style="color: #DAA520; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
+                        <a class="nav-link active theme-yellow" href="#" onclick="loadHomeView(); return false;"
+                           style="font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
                             Home
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(1); transition: transform 0.3s ease;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100 nav-styles" style="transform: scaleX(1) !important;"</span>
                         </a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link" href="#" onclick="loadProductsView(); return false;"
-                           style="color: #ECF0F1; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
+                        <a class="nav-link" href="#" onclick="loadProductsView(); return false;">
                             Products
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s ease;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100 nav-styles"></span>
                         </a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link" href="#" onclick="loadPromotionsView(); return false;"
-                           style="color: #ECF0F1; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
+                        <a class="nav-link" href="#" onclick="loadPromotionsView(); return false;">
                             Promotions
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s ease;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100 nav-styles"></span>
                         </a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link" href="#" onclick="loadCommunityView(); return false;"
-                           style="color: #ECF0F1; font-size: 1.1rem; position: relative; transition: all 0.3s ease;">
+                        <a class="nav-link" href="#" onclick="loadCommunityView(); return false;">                          
                             Community
-                            <span class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: #DAA520; transform: scaleX(0); transition: transform 0.3s ease;"></span>
+                            <span class="position-absolute bottom-0 start-0 w-100 nav-styles"></span>
                         </a>
                     </li>
                 </ul>
